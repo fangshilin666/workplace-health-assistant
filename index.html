@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工位健康助手 - 守护你的每一刻</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- MediaPipe Pose CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+    <!-- Tailwind 配置：低饱和柔和配色方案 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        secondary: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7e22ce',
+                            800: '#6b21a8',
+                            900: '#581c87',
+                        },
+                        soft: {
+                            blue: '#e0f2fe',
+                            green: '#dcfce7',
+                            purple: '#f3e8ff',
+                            orange: '#ffedd5',
+                            pink: '#fce7f3',
+                            gray: '#f8fafc',
+                        },
+                        muted: {
+                            50: '#fafafa',
+                            100: '#f5f5f5',
+                            200: '#e5e5e5',
+                            300: '#d4d4d4',
+                            400: '#a3a3a3',
+                            500: '#737373',
+                            600: '#525252',
+                            700: '#404040',
+                            800: '#262626',
+                            900: '#171717',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -4px rgba(0, 0, 0, 0.06)',
+                        'card': '0 2px 12px -2px rgba(0, 0, 0, 0.04)',
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.25rem',
+                        '3xl': '1.5rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* 动画效果 */
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s ease-in-out infinite;
+        }
+        
+        @keyframes slide-up {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slide-up 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-soft-gray text-muted-800 min-h-screen">
+
+    <!-- ==================== 顶部导航栏 ==================== -->
+    <header id="header" class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-muted-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo 区域 -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center">
+                        <i data-lucide="heart-pulse" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-semibold text-muted-800">工位健康助手</h1>
+                        <p class="text-xs text-muted-400 hidden sm:block">守护你的每一刻</p>
+                    </div>
+                </div>
+                
+                <!-- 桌面端导航菜单 -->
+                <nav class="hidden md:flex items-center gap-6">
+                    <a href="#" class="nav-link text-primary-600 font-medium flex items-center gap-2">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                        首页
+                    </a>
+                    <a href="#" class="nav-link text-muted-500 hover:text-muted-700 font-medium flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4"></i>
+                        拉伸动作
+                    </a>
+                    <a href="#" class="nav-link text-muted-500 hover:text-muted-700 font-medium flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                        统计分析
+                    </a>
+                </nav>
+                
+                <!-- 右侧操作区 -->
+                <div class="flex items-center gap-3">
+                    <!-- 通知按钮 -->
+                    <button id="btn-notification" class="relative p-2 rounded-full hover:bg-soft-gray transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5 text-muted-500"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-400 rounded-full"></span>
+                    </button>
+                    
+                    <!-- 设置按钮 -->
+                    <button id="btn-settings" class="p-2 rounded-full hover:bg-soft-gray transition-colors">
+                        <i data-lucide="settings" class="w-5 h-5 text-muted-500"></i>
+                    </button>
+                    
+                    <!-- 用户头像 -->
+                    <div class="hidden sm:flex items-center gap-2 pl-3 border-l border-muted-100">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-soft-purple to-soft-pink flex items-center justify-center">
+                            <span class="text-xs font-medium text-muted-600">Hi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== 主内容区域 ==================== -->
+    <main id="main-content" class="pt-20 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        
+        <!-- ==================== 今日健康概览卡片 ==================== -->
+        <section id="health-overview" class="mb-8 animate-slide-up">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-muted-800">今日健康概览</h2>
+                <span class="text-sm text-muted-400" id="current-date">2024年1月15日 星期一</span>
+            </div>
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- 工作时长卡片 -->
+                <div class="bg-white rounded-2xl p-5 shadow-card hover:shadow-soft transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-soft-blue flex items-center justify-center">
+                            <i data-lucide="clock" class="w-5 h-5 text-blue-500"></i>
+                        </div>
+                        <span class="text-xs font-medium text-primary-500 bg-primary-50 px-2 py-1 rounded-full">+25%</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-muted-800" id="stat-work-time">4.5</p>
+                        <p class="text-sm text-muted-400 mt-1">工作时长(小时)</p>
+                    </div>
+                    <div class="mt-4 h-1.5 bg-muted-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-blue-400 to-blue-500 rounded-full" style="width: 60%"></div>
+                    </div>
+                </div>
+                
+                <!-- 良好姿态卡片 -->
+                <div class="bg-white rounded-2xl p-5 shadow-card hover:shadow-soft transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-soft-green flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+                        </div>
+                        <span class="text-xs font-medium text-green-500 bg-green-50 px-2 py-1 rounded-full">良好</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-muted-800" id="stat-good-posture">78%</p>
+                        <p class="text-sm text-muted-400 mt-1">良好姿态占比</p>
+                    </div>
+                    <div class="mt-4 h-1.5 bg-muted-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full" style="width: 78%"></div>
+                    </div>
+                </div>
+                
+                <!-- 拉伸次数卡片 -->
+                <div class="bg-white rounded-2xl p-5 shadow-card hover:shadow-soft transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-soft-purple flex items-center justify-center">
+                            <i data-lucide="activity" class="w-5 h-5 text-purple-500"></i>
+                        </div>
+                        <span class="text-xs font-medium text-purple-500 bg-purple-50 px-2 py-1 rounded-full">+3次</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-muted-800" id="stat-stretch-count">5</p>
+                        <p class="text-sm text-muted-400 mt-1">完成拉伸(次)</p>
+                    </div>
+                    <div class="mt-4 h-1.5 bg-muted-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-purple-400 to-purple-500 rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <!-- 提醒次数卡片 -->
+                <div class="bg-white rounded-2xl p-5 shadow-card hover:shadow-soft transition-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-soft-orange flex items-center justify-center">
+                            <i data-lucide="bell" class="w-5 h-5 text-orange-500"></i>
+                        </div>
+                        <span class="text-xs font-medium text-orange-500 bg-orange-50 px-2 py-1 rounded-full">已完成</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-muted-800" id="stat-reminder-count">3</p>
+                        <p class="text-sm text-muted-400 mt-1">提醒次数</p>
+                    </div>
+                    <div class="mt-4 h-1.5 bg-muted-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 久坐计时器区域 ==================== -->
+        <section id="timer-section" class="mb-8 animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden">
+                <!-- 背景装饰 -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <!-- 计时器左侧 -->
+                        <div class="text-center sm:text-left">
+                            <h3 class="text-lg font-medium opacity-90 mb-2">距离下次休息</h3>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-5xl sm:text-6xl font-bold tracking-tight" id="timer-display">32:45</span>
+                                <span class="text-lg opacity-80">分钟</span>
+                            </div>
+                            <p class="text-sm opacity-70 mt-2" id="timer-status">正在工作中</p>
+                        </div>
+                        
+                        <!-- 计时器右侧控制区 -->
+                        <div class="flex flex-col sm:flex-row items-center gap-4">
+                            <!-- 时间选择按钮组 -->
+                            <div class="flex bg-white/20 rounded-xl p-1">
+                                <button class="time-preset-btn px-4 py-2 rounded-lg text-sm font-medium bg-white text-primary-600">30分钟</button>
+                                <button class="time-preset-btn px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/10">45分钟</button>
+                                <button class="time-preset-btn px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/10">60分钟</button>
+                            </div>
+                            
+                            <!-- 控制按钮 -->
+                            <button id="btn-timer-toggle" class="flex items-center gap-2 px-6 py-3 bg-white text-primary-600 rounded-xl font-medium hover:bg-white/90 transition-colors">
+                                <i data-lucide="pause" class="w-5 h-5"></i>
+                                <span>暂停</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 进度条 -->
+                    <div class="mt-6">
+                        <div class="flex justify-between text-sm opacity-80 mb-2">
+                            <span>工作进度</span>
+                            <span id="timer-progress-text">35%</span>
+                        </div>
+                        <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                            <div id="timer-progress-bar" class="h-full bg-white rounded-full transition-all duration-1000 ease-out" style="width: 35%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 中间区域：拉伸动作 + 姿态识别 ==================== -->
+        <div class="grid lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- ==================== 拉伸动作分类卡片 ==================== -->
+            <section id="stretch-section" class="lg:col-span-2 animate-slide-up" style="animation-delay: 0.2s;">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-muted-800">拉伸动作库</h2>
+                    <a href="#" class="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1">
+                        查看全部
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <!-- 肩颈拉伸 -->
+                    <div class="stretch-category-card bg-white rounded-2xl p-5 shadow-card hover:shadow-soft transition-all hover:-translate-y-1 cursor-pointer">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center mb-4">
+                            <span class="text-2xl">🪢</span>
+                        </div>
+                        <h3 class="font-medium text-muted-800">肩颈拉伸</h3>
+                        <p class="text-sm text-muted-400 mt-1">3个动作 · 5分钟</p>
+                        <div class="mt-4 flex items-center gap-2">
+                            <i data-lucide="play-circle" class="w-4 h-4 text-primary-500"></i>
+                            <span class="text-xs text-primary-500 font-medium">开始练习</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 腰背拉伸 -->
+                    <div class="stretch-category-card bg-white rounded-2xl p-5 shadow-card hover:shadow-soft transition-all hover:-translate-y-1 cursor-pointer">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center mb-4">
+                            <span class="text-2xl">🦴</span>
+                        </div>
+                        <h3 class="font-medium text-muted-800">腰背拉伸</h3>
+                        <p class="text-sm text-muted-400 mt-1">3个动作 · 5分钟</p>
+                        <div class="mt-4 flex items-center gap-2">
+                            <i data-lucide="play-circle" class="w-4 h-4 text-primary-500"></i>
+                            <span class="text-xs text-primary-500 font-medium">开始练习</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 手腕拉伸 -->
+                    <div class="stretch-category-card bg-white rounded-2xl p-5 shadow-card hover:shadow-soft transition-all hover:-translate-y-1 cursor-pointer">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center mb-4">
+                            <span class="text-2xl">🤚</span>
+                        </div>
+                        <h3 class="font-medium text-muted-800">手腕拉伸</h3>
+                        <p class="text-sm text-muted-400 mt-1">3个动作 · 5分钟</p>
+                        <div class="mt-4 flex items-center gap-2">
+                            <i data-lucide="play-circle" class="w-4 h-4 text-primary-500"></i>
+                            <span class="text-xs text-primary-500 font-medium">开始练习</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 眼部放松 -->
+                    <div class="stretch-category-card bg-white rounded-2xl p-5 shadow-card hover:shadow-soft transition-all hover:-translate-y-1 cursor-pointer">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center mb-4">
+                            <span class="text-2xl">👁️</span>
+                        </div>
+                        <h3 class="font-medium text-muted-800">眼部放松</h3>
+                        <p class="text-sm text-muted-400 mt-1">2个动作 · 3分钟</p>
+                        <div class="mt-4 flex items-center gap-2">
+                            <i data-lucide="play-circle" class="w-4 h-4 text-primary-500"></i>
+                            <span class="text-xs text-primary-500 font-medium">开始练习</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== AI姿态识别入口卡片 ==================== -->
+            <section id="pose-section" class="animate-slide-up" style="animation-delay: 0.3s;">
+                <div class="bg-white rounded-3xl p-6 shadow-card h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-muted-800">AI姿态识别</h2>
+                        <span id="pose-status-badge" class="px-3 py-1 bg-primary-50 text-primary-600 text-xs font-medium rounded-full flex items-center gap-1">
+                            <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse-soft"></span>
+                            可使用
+                        </span>
+                    </div>
+                    
+                    <!-- 摄像头预览区域 -->
+                    <div class="relative bg-muted-50 rounded-2xl overflow-hidden mb-4 aspect-[4/3]">
+                        <!-- 视频元素（隐藏，用于获取帧） -->
+                        <video id="pose-video" class="absolute inset-0 w-full h-full object-cover" autoplay playsinline muted style="display: none;"></video>
+                        
+                        <!-- Canvas 画布（显示姿态骨架） -->
+                        <canvas id="pose-canvas" class="absolute inset-0 w-full h-full object-cover"></canvas>
+                        
+                        <!-- 初始状态提示 -->
+                        <div id="pose-init-tip" class="absolute inset-0 flex flex-col items-center justify-center text-muted-400">
+                            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-3 shadow-card">
+                                <i data-lucide="camera" class="w-10 h-10 text-muted-300"></i>
+                            </div>
+                            <p class="text-sm">点击开始监测</p>
+                            <p class="text-xs mt-1 opacity-70">摄像头数据仅在本地处理</p>
+                        </div>
+                        
+                        <!-- 权限拒绝提示 -->
+                        <div id="pose-permission-denied" class="absolute inset-0 flex flex-col items-center justify-center text-muted-400 hidden bg-black/50">
+                            <div class="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-3">
+                                <i data-lucide="alert-triangle" class="w-10 h-10 text-red-500"></i>
+                            </div>
+                            <p class="text-sm text-white">摄像头权限被拒绝</p>
+                            <p class="text-xs mt-1 opacity-70 text-white">请在浏览器设置中允许摄像头权限</p>
+                            <button id="btn-retry-camera" class="mt-4 px-4 py-2 bg-white text-primary-600 text-sm rounded-lg font-medium">
+                                重新授权
+                            </button>
+                        </div>
+                        
+                        <!-- 加载中提示 -->
+                        <div id="pose-loading" class="absolute inset-0 flex flex-col items-center justify-center text-muted-400 hidden bg-black/30">
+                            <div class="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+                            <p class="text-sm text-white">正在加载模型...</p>
+                        </div>
+                        
+                        <!-- 姿态状态指示器 -->
+                        <div id="pose-status-indicator" class="absolute top-3 left-3 flex gap-2 hidden">
+                            <span id="pose-status-label" class="px-2 py-1 bg-green-500 text-white text-xs rounded-full">正常</span>
+                        </div>
+                        
+                        <!-- 摄像头开关 -->
+                        <button id="btn-camera-toggle" class="absolute bottom-3 right-3 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center shadow-card hover:bg-white transition-colors">
+                            <i data-lucide="video" class="w-5 h-5 text-muted-600"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 实时状态提示 -->
+                    <div id="pose-status-list" class="space-y-3 mb-6">
+                        <!-- 头部前倾状态 -->
+                        <div id="status-head-forward" class="flex items-center justify-between p-3 bg-soft-green rounded-xl">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
+                                <span class="text-sm text-muted-700">头部姿势</span>
+                            </div>
+                            <span class="text-xs text-green-500 font-medium">正常</span>
+                        </div>
+                        <!-- 耸肩状态 -->
+                        <div id="status-shoulder-shrug" class="flex items-center justify-between p-3 bg-soft-green rounded-xl">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
+                                <span class="text-sm text-muted-700">肩部状态</span>
+                            </div>
+                            <span class="text-xs text-green-500 font-medium">正常</span>
+                        </div>
+                        <!-- 含胸状态 -->
+                        <div id="status-hunchback" class="flex items-center justify-between p-3 bg-soft-green rounded-xl">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
+                                <span class="text-sm text-muted-700">背部姿态</span>
+                            </div>
+                            <span class="text-xs text-green-500 font-medium">正常</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 开始/停止按钮 -->
+                    <button id="btn-start-pose" class="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-medium hover:from-primary-600 hover:to-primary-700 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                        开始实时监测
+                    </button>
+                    
+                    <!-- 权限提示 -->
+                    <p class="text-xs text-muted-400 text-center mt-3">首次使用需授权摄像头权限</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== 周趋势图表区域 ==================== -->
+        <section id="stats-section" class="mb-8 animate-slide-up" style="animation-delay: 0.4s;">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-muted-800">本周健康趋势</h2>
+                <div class="flex items-center gap-2 bg-white rounded-lg p-1 shadow-card">
+                    <button class="stat-period-btn px-4 py-2 rounded-md text-sm font-medium bg-primary-500 text-white">本周</button>
+                    <button class="stat-period-btn px-4 py-2 rounded-md text-sm font-medium text-muted-500 hover:bg-muted-50">本月</button>
+                    <button class="stat-period-btn px-4 py-2 rounded-md text-sm font-medium text-muted-500 hover:bg-muted-50">全部</button>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-3xl p-6 shadow-card">
+                <!-- 图表容器 -->
+                <div class="h-64">
+                    <canvas id="weekly-chart"></canvas>
+                </div>
+                
+                <!-- 图表说明 -->
+                <div class="mt-6 flex flex-wrap gap-6">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-primary-500"></span>
+                        <span class="text-sm text-muted-600">良好姿态占比</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-secondary-400"></span>
+                        <span class="text-sm text-muted-600">工作时长(小时)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-orange-400"></span>
+                        <span class="text-sm text-muted-600">拉伸次数</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ==================== 健康小贴士 ==================== -->
+        <section id="tips-section" class="animate-slide-up" style="animation-delay: 0.5s;">
+            <div class="bg-gradient-to-r from-soft-purple to-soft-pink rounded-3xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-white/80 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="lightbulb" class="w-6 h-6 text-yellow-500"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-muted-800 mb-2">今日健康小贴士</h3>
+                        <p class="text-sm text-muted-600 leading-relaxed">
+                            久坐会导致血液循环不畅，建议每45分钟起身活动一下。保持正确的坐姿：背部挺直，双脚平放，屏幕与视线平齐。工作间隙可以做一些简单的颈部转动和肩部放松运动。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- ==================== 底部导航（移动端） ==================== -->
+    <nav id="mobile-nav" class="fixed bottom-0 left-0 right-0 bg-white border-t border-muted-100 md:hidden z-50">
+        <div class="flex items-center justify-around h-16">
+            <button class="mobile-nav-btn flex flex-col items-center justify-center w-full h-full text-primary-500">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                <span class="text-xs mt-1 font-medium">首页</span>
+            </button>
+            <button class="mobile-nav-btn flex flex-col items-center justify-center w-full h-full text-muted-400 hover:text-muted-600">
+                <i data-lucide="activity" class="w-6 h-6"></i>
+                <span class="text-xs mt-1 font-medium">拉伸</span>
+            </button>
+            <button class="mobile-nav-btn flex flex-col items-center justify-center w-full h-full text-muted-400 hover:text-muted-600">
+                <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
+                <span class="text-xs mt-1 font-medium">统计</span>
+            </button>
+            <button class="mobile-nav-btn flex flex-col items-center justify-center w-full h-full text-muted-400 hover:text-muted-600">
+                <i data-lucide="user" class="w-6 h-6"></i>
+                <span class="text-xs mt-1 font-medium">我的</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==================== 设置面板（弹窗） ==================== -->
+    <div id="settings-modal" class="fixed inset-0 z-[100] hidden">
+        <!-- 遮罩层 -->
+        <div id="settings-overlay" class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+        
+        <!-- 设置面板内容 -->
+        <div id="settings-content" class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl transform transition-transform">
+            <!-- 面板头部 -->
+            <div class="flex items-center justify-between p-6 border-b border-muted-100">
+                <h2 class="text-xl font-semibold text-muted-800">设置</h2>
+                <button id="btn-close-settings" class="p-2 rounded-full hover:bg-muted-100 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-muted-500"></i>
+                </button>
+            </div>
+            
+            <!-- 面板内容 -->
+            <div class="p-6 overflow-y-auto h-[calc(100%-80px)]">
+                <!-- 提醒设置 -->
+                <div class="mb-8">
+                    <h3 class="font-medium text-muted-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="bell" class="w-5 h-5 text-primary-500"></i>
+                        提醒设置
+                    </h3>
+                    
+                    <!-- 久坐提醒时长 -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-muted-600 mb-2">久坐提醒时长</label>
+                        <div class="flex bg-muted-50 rounded-xl p-1">
+                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium bg-white shadow-sm text-primary-600">30分钟</button>
+                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium text-muted-500 hover:bg-white/50">45分钟</button>
+                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium text-muted-500 hover:bg-white/50">60分钟</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 护眼提醒 -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-muted-600 mb-2">护眼提醒</label>
+                        <div class="flex items-center justify-between p-4 bg-muted-50 rounded-xl">
+                            <div>
+                                <p class="font-medium text-muted-800">每20分钟提醒休息</p>
+                                <p class="text-xs text-muted-400 mt-1">远眺放松眼部肌肉</p>
+                            </div>
+                            <button class="setting-toggle-btn w-12 h-7 bg-primary-500 rounded-full relative transition-colors">
+                                <span class="absolute top-1 right-1 w-5 h-5 bg-white rounded-full shadow-md transition-all"></span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 声音提醒 -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-muted-600 mb-2">声音提醒</label>
+                        <div class="flex items-center justify-between p-4 bg-muted-50 rounded-xl">
+                            <div>
+                                <p class="font-medium text-muted-800">播放提醒音效</p>
+                                <p class="text-xs text-muted-400 mt-1">提醒时播放提示音</p>
+                            </div>
+                            <button class="setting-toggle-btn w-12 h-7 bg-primary-500 rounded-full relative transition-colors">
+                                <span class="absolute top-1 right-1 w-5 h-5 bg-white rounded-full shadow-md transition-all"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 姿态识别设置 -->
+                <div class="mb-8">
+                    <h3 class="font-medium text-muted-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="scan-eye" class="w-5 h-5 text-secondary-500"></i>
+                        姿态识别
+                    </h3>
+                    
+                    <!-- 灵敏度设置 -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-muted-600 mb-2">检测灵敏度</label>
+                        <div class="flex bg-muted-50 rounded-xl p-1">
+                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium text-muted-500 hover:bg-white/50">低</button>
+                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium bg-white shadow-sm text-primary-600">中</button>
+                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium text-muted-500 hover:bg-white/50">高</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 自动开始 -->
+                    <div>
+                        <label class="block text-sm text-muted-600 mb-2">自动开始监测</label>
+                        <div class="flex items-center justify-between p-4 bg-muted-50 rounded-xl">
+                            <div>
+                                <p class="font-medium text-muted-800">打开页面自动开始</p>
+                                <p class="text-xs text-muted-400 mt-1">进入页面即启动摄像头</p>
+                            </div>
+                            <button class="setting-toggle-btn w-12 h-7 bg-muted-300 rounded-full relative transition-colors">
+                                <span class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow-md transition-all"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据管理 -->
+                <div class="mb-8">
+                    <h3 class="font-medium text-muted-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="database" class="w-5 h-5 text-blue-500"></i>
+                        数据管理
+                    </h3>
+                    
+                    <!-- 导出数据 -->
+                    <button class="w-full flex items-center justify-between p-4 bg-muted-50 rounded-xl hover:bg-muted-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                                <i data-lucide="download" class="w-5 h-5 text-blue-500"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-medium text-muted-800">导出数据</p>
+                                <p class="text-xs text-muted-400">导出所有健康数据</p>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-muted-400"></i>
+                    </button>
+                    
+                    <!-- 清除数据 -->
+                    <button class="w-full flex items-center justify-between p-4 bg-red-50 rounded-xl hover:bg-red-100 transition-colors mt-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                                <i data-lucide="trash-2" class="w-5 h-5 text-red-500"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-medium text-red-600">清除所有数据</p>
+                                <p class="text-xs text-red-400">删除本地存储的所有数据</p>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-red-400"></i>
+                    </button>
+                </div>
+                
+                <!-- 关于 -->
+                <div>
+                    <h3 class="font-medium text-muted-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="info" class="w-5 h-5 text-muted-400"></i>
+                        关于
+                    </h3>
+                    
+                    <div class="p-4 bg-muted-50 rounded-xl">
+                        <p class="font-medium text-muted-800">工位健康助手</p>
+                        <p class="text-sm text-muted-400 mt-1">版本 1.0.0</p>
+                        <p class="text-xs text-muted-400 mt-2">基于 MediaPipe Pose 开发，所有数据仅在本地处理，保护您的隐私安全。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 通知弹窗（假数据） ==================== -->
+    <div id="notification-toast" class="fixed bottom-20 right-4 bg-white rounded-2xl p-4 shadow-soft flex items-start gap-3 z-[101] hidden animate-slide-up">
+        <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <i data-lucide="coffee" class="w-5 h-5 text-primary-500"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+            <h4 class="font-medium text-muted-800">该休息一下了</h4>
+            <p class="text-sm text-muted-500 mt-1">您已经工作了45分钟，建议起身活动一下</p>
+            <div class="flex gap-2 mt-3">
+                <button class="px-4 py-2 bg-primary-500 text-white text-sm rounded-lg font-medium">去拉伸</button>
+                <button class="px-4 py-2 bg-muted-100 text-muted-600 text-sm rounded-lg font-medium">延后10分钟</button>
+            </div>
+        </div>
+        <button id="btn-close-toast" class="p-1 hover:bg-muted-100 rounded-full">
+            <i data-lucide="x" class="w-4 h-4 text-muted-400"></i>
+        </button>
+    </div>
+
+    <!-- ==================== JavaScript 代码 ==================== -->
+    <script>
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+        
+        // 设置当前日期
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long'
+        });
+        
+        // ==================== 设置面板逻辑 ====================
+        const btnSettings = document.getElementById('btn-settings');
+        const settingsModal = document.getElementById('settings-modal');
+        const btnCloseSettings = document.getElementById('btn-close-settings');
+        const settingsOverlay = document.getElementById('settings-overlay');
+        
+        // 打开设置面板
+        btnSettings.addEventListener('click', () => {
+            settingsModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // 关闭设置面板
+        const closeSettings = () => {
+            settingsModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+        
+        btnCloseSettings.addEventListener('click', closeSettings);
+        settingsOverlay.addEventListener('click', closeSettings);
+        
+        // 设置选项按钮交互
+        document.querySelectorAll('.setting-option-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 清除同组按钮的选中状态
+                const group = this.parentElement;
+                group.querySelectorAll('.setting-option-btn').forEach(b => {
+                    b.classList.remove('bg-white', 'shadow-sm', 'text-primary-600');
+                    b.classList.add('text-muted-500', 'hover:bg-white/50');
+                });
+                // 设置当前按钮为选中状态
+                this.classList.remove('text-muted-500', 'hover:bg-white/50');
+                this.classList.add('bg-white', 'shadow-sm', 'text-primary-600');
+            });
+        });
+        
+        // 设置开关按钮交互
+        document.querySelectorAll('.setting-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const toggle = this.querySelector('span');
+                const isOn = this.classList.contains('bg-primary-500');
+                
+                if (isOn) {
+                    // 关闭
+                    this.classList.remove('bg-primary-500');
+                    this.classList.add('bg-muted-300');
+                    toggle.classList.remove('right-1');
+                    toggle.classList.add('left-1');
+                } else {
+                    // 打开
+                    this.classList.remove('bg-muted-300');
+                    this.classList.add('bg-primary-500');
+                    toggle.classList.remove('left-1');
+                    toggle.classList.add('right-1');
+                }
+            });
+        });
+        
+        // ==================== 久坐提醒模块 ====================
+        const SittingReminder = (function() {
+            // ==================== 常量定义 ====================
+            const STORAGE_KEY_SETTINGS = 'workplace_health_settings';
+            const STORAGE_KEY_TIMER = 'workplace_health_timer_state';
+            
+            // 默认设置
+            const DEFAULT_SETTINGS = {
+                workDuration: 45,           // 默认45分钟
+                soundEnabled: true,         // 默认开启音效
+                notificationEnabled: true   // 默认开启通知
+            };
+            
+            // ==================== DOM 元素 ====================
+            const timerDisplay = document.getElementById('timer-display');
+            const timerStatus = document.getElementById('timer-status');
+            const timerProgressBar = document.getElementById('timer-progress-bar');
+            const timerProgressText = document.getElementById('timer-progress-text');
+            const btnTimerToggle = document.getElementById('btn-timer-toggle');
+            const timePresetBtns = document.querySelectorAll('.time-preset-btn');
+            const notificationToast = document.getElementById('notification-toast');
+            const btnCloseToast = document.getElementById('btn-close-toast');
+            
+            // ==================== 状态变量 ====================
+            let settings = {};
+            let timerState = {
+                duration: 45,              // 当前设置的时长（分钟）
+                remainingSeconds: 45 * 60, // 剩余秒数
+                isRunning: false,          // 是否正在运行
+                startTime: null,           // 开始时间戳
+                endTime: null              // 结束时间戳
+            };
+            let timerInterval = null;
+            let audioContext = null;
+            let eventListeners = [];       // 保存事件监听器引用用于清理
+            
+            // ==================== 初始化 ====================
+            function init() {
+                loadSettings();
+                loadTimerState();
+                renderTimer();
+                bindEvents();
+                
+                // 添加页面关闭清理
+                addEventListener(window, 'beforeunload', cleanup);
+                addEventListener(window, 'unload', cleanup);
+                
+                // 如果之前正在运行，自动恢复计时
+                if (timerState.isRunning) {
+                    startTimer();
+                }
+            }
+            
+            // ==================== 辅助函数 ====================
+            
+            /**
+             * 安全添加事件监听器并保存引用
+             */
+            function addEventListener(target, type, handler) {
+                target.addEventListener(type, handler);
+                eventListeners.push({ target, type, handler });
+            }
+            
+            /**
+             * 清理所有资源
+             */
+            function cleanup() {
+                stopTimer();
+                
+                // 移除所有事件监听器
+                eventListeners.forEach(({ target, type, handler }) => {
+                    target.removeEventListener(type, handler);
+                });
+                eventListeners = [];
+                
+                // 关闭 AudioContext
+                if (audioContext) {
+                    audioContext.close().catch(() => {});
+                    audioContext = null;
+                }
+            }
+            
+            // ==================== LocalStorage 操作 ====================
+            
+            /**
+             * 加载用户设置
+             */
+            function loadSettings() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+                    if (saved) {
+                        settings = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+                    } else {
+                        settings = { ...DEFAULT_SETTINGS };
+                        saveSettings();
+                    }
+                } catch (e) {
+                    console.error('加载设置失败:', e);
+                    settings = { ...DEFAULT_SETTINGS };
+                }
+                
+                // 更新设置面板中的开关状态
+                updateSettingsUI();
+            }
+            
+            /**
+             * 保存用户设置
+             */
+            function saveSettings() {
+                try {
+                    localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError') {
+                        console.error('LocalStorage 空间不足，请清理浏览器缓存');
+                    } else {
+                        console.error('保存设置失败:', e);
+                    }
+                }
+            }
+            
+            /**
+             * 加载计时器状态（用于页面刷新后恢复）
+             */
+            function loadTimerState() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY_TIMER);
+                    if (saved) {
+                        const savedState = JSON.parse(saved);
+                        
+                        // 检查是否已过期（结束时间早于当前时间）
+                        if (savedState.endTime && savedState.endTime < Date.now()) {
+                            // 已过期，重置为初始状态
+                            timerState = {
+                                duration: settings.workDuration,
+                                remainingSeconds: settings.workDuration * 60,
+                                isRunning: false,
+                                startTime: null,
+                                endTime: null
+                            };
+                        } else {
+                            // 未过期，恢复状态
+                            timerState = { ...timerState, ...savedState };
+                            
+                            // 计算剩余时间
+                            if (timerState.isRunning && timerState.endTime) {
+                                const now = Date.now();
+                                const remaining = Math.max(0, Math.floor((timerState.endTime - now) / 1000));
+                                timerState.remainingSeconds = remaining;
+                            }
+                        }
+                    } else {
+                        // 首次使用，初始化
+                        timerState.duration = settings.workDuration;
+                        timerState.remainingSeconds = settings.workDuration * 60;
+                    }
+                } catch (e) {
+                    console.error('加载计时器状态失败:', e);
+                }
+            }
+            
+            /**
+             * 保存计时器状态
+             */
+            function saveTimerState() {
+                try {
+                    localStorage.setItem(STORAGE_KEY_TIMER, JSON.stringify(timerState));
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError') {
+                        console.error('LocalStorage 空间不足，请清理浏览器缓存');
+                    } else {
+                        console.error('保存计时器状态失败:', e);
+                    }
+                }
+            }
+            
+            /**
+             * 清除计时器状态
+             */
+            function clearTimerState() {
+                try {
+                    localStorage.removeItem(STORAGE_KEY_TIMER);
+                } catch (e) {
+                    console.error('清除计时器状态失败:', e);
+                }
+            }
+            
+            // ==================== 计时器逻辑 ====================
+            
+            /**
+             * 开始计时
+             */
+            function startTimer() {
+                if (timerState.isRunning) return;
+                
+                timerState.isRunning = true;
+                timerState.startTime = Date.now();
+                timerState.endTime = Date.now() + timerState.remainingSeconds * 1000;
+                
+                saveTimerState();
+                updateToggleButton();
+                renderTimer();
+                
+                // 每秒更新一次
+                timerInterval = setInterval(() => {
+                    const now = Date.now();
+                    const remaining = Math.max(0, Math.floor((timerState.endTime - now) / 1000));
+                    timerState.remainingSeconds = remaining;
+                    
+                    renderTimer();
+                    
+                    // 保存状态（每分钟保存一次，避免频繁写入）
+                    if (remaining % 60 === 0) {
+                        saveTimerState();
+                    }
+                    
+                    // 时间到
+                    if (remaining <= 0) {
+                        stopTimer();
+                        showReminder();
+                    }
+                }, 1000);
+            }
+            
+            /**
+             * 暂停计时
+             */
+            function stopTimer() {
+                timerState.isRunning = false;
+                
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                
+                saveTimerState();
+                updateToggleButton();
+                renderTimer();
+            }
+            
+            /**
+             * 重置计时
+             */
+            function resetTimer(duration = null) {
+                stopTimer();
+                
+                if (duration !== null) {
+                    timerState.duration = duration;
+                    settings.workDuration = duration;
+                    saveSettings();
+                }
+                
+                timerState.remainingSeconds = timerState.duration * 60;
+                timerState.startTime = null;
+                timerState.endTime = null;
+                
+                saveTimerState();
+                renderTimer();
+            }
+            
+            /**
+             * 延后10分钟
+             */
+            function delayTimer() {
+                timerState.remainingSeconds += 10 * 60;
+                timerState.endTime = Date.now() + timerState.remainingSeconds * 1000;
+                
+                hideReminder();
+                startTimer();
+            }
+            
+            /**
+             * 渲染计时器显示
+             */
+            function renderTimer() {
+                const minutes = Math.floor(timerState.remainingSeconds / 60);
+                const seconds = timerState.remainingSeconds % 60;
+                
+                // 格式化显示（两位数）
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                
+                // 更新状态文本
+                if (timerState.isRunning) {
+                    timerStatus.textContent = '正在工作中';
+                    timerStatus.classList.remove('text-red-500');
+                    timerStatus.classList.add('opacity-70');
+                } else {
+                    timerStatus.textContent = '已暂停';
+                    timerStatus.classList.remove('opacity-70');
+                    timerStatus.classList.add('text-red-500');
+                }
+                
+                // 更新进度条
+                const totalSeconds = timerState.duration * 60;
+                const progress = ((totalSeconds - timerState.remainingSeconds) / totalSeconds) * 100;
+                timerProgressBar.style.width = `${progress}%`;
+                timerProgressText.textContent = `${Math.round(progress)}%`;
+            }
+            
+            /**
+             * 更新切换按钮状态
+             */
+            function updateToggleButton() {
+                const icon = btnTimerToggle.querySelector('svg');
+                const text = btnTimerToggle.querySelector('span');
+                
+                if (timerState.isRunning) {
+                    // 显示暂停图标和文字
+                    icon.setAttribute('data-lucide', 'pause');
+                    text.textContent = '暂停';
+                } else {
+                    // 显示播放图标和文字
+                    icon.setAttribute('data-lucide', 'play');
+                    text.textContent = '开始';
+                }
+                
+                // 只重新渲染当前按钮的图标，而非全局
+                lucide.createIcons({
+                    root: btnTimerToggle
+                });
+            }
+            
+            // ==================== 提醒功能 ====================
+            
+            /**
+             * 显示提醒弹窗
+             */
+            function showReminder() {
+                if (!settings.notificationEnabled) return;
+                
+                notificationToast.classList.remove('hidden');
+                
+                // 播放提示音
+                playNotificationSound();
+                
+                // 尝试显示浏览器通知
+                showBrowserNotification();
+            }
+            
+            /**
+             * 隐藏提醒弹窗
+             */
+            function hideReminder() {
+                notificationToast.classList.add('hidden');
+            }
+            
+            /**
+             * 播放提示音效
+             */
+            function playNotificationSound() {
+                if (!settings.soundEnabled) return;
+                
+                try {
+                    // 使用 Web Audio API 生成柔和的提示音
+                    if (!audioContext) {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // 柔和的音调序列
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.2); // E5
+                    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.4); // G5
+                    
+                    // 音量渐变
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
+                    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.8);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.8);
+                } catch (e) {
+                    console.error('播放提示音失败:', e);
+                }
+            }
+            
+            /**
+             * 显示浏览器通知
+             */
+            function showBrowserNotification() {
+                if (!('Notification' in window)) return;
+                
+                if (Notification.permission === 'granted') {
+                    new Notification('工位健康助手', {
+                        body: `您已经工作了${timerState.duration}分钟，该休息一下了！`,
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2322c55e" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
+                    });
+                } else if (Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
+            }
+            
+            // ==================== 设置面板 UI 更新 ====================
+            
+            /**
+             * 更新设置面板中的开关状态
+             */
+            function updateSettingsUI() {
+                // 更新时间预设按钮选中状态
+                timePresetBtns.forEach(btn => {
+                    const btnDuration = parseInt(btn.textContent);
+                    if (btnDuration === settings.workDuration) {
+                        btn.classList.add('bg-white', 'text-primary-600');
+                        btn.classList.remove('hover:bg-white/10');
+                    } else {
+                        btn.classList.remove('bg-white', 'text-primary-600');
+                        btn.classList.add('hover:bg-white/10');
+                    }
+                });
+                
+                // 更新声音提醒开关
+                const soundToggle = document.querySelector('.setting-toggle-btn:nth-of-type(2)');
+                if (soundToggle) {
+                    const toggle = soundToggle.querySelector('span');
+                    if (settings.soundEnabled) {
+                        soundToggle.classList.add('bg-primary-500');
+                        soundToggle.classList.remove('bg-muted-300');
+                        toggle.classList.add('right-1');
+                        toggle.classList.remove('left-1');
+                    } else {
+                        soundToggle.classList.remove('bg-primary-500');
+                        soundToggle.classList.add('bg-muted-300');
+                        toggle.classList.remove('right-1');
+                        toggle.classList.add('left-1');
+                    }
+                }
+                
+                // 更新护眼提醒开关（默认开启）
+                const eyeToggle = document.querySelector('.setting-toggle-btn:nth-of-type(1)');
+                if (eyeToggle) {
+                    const toggle = eyeToggle.querySelector('span');
+                    eyeToggle.classList.add('bg-primary-500');
+                    eyeToggle.classList.remove('bg-muted-300');
+                    toggle.classList.add('right-1');
+                    toggle.classList.remove('left-1');
+                }
+            }
+            
+            // ==================== 事件绑定 ====================
+            
+            function bindEvents() {
+                // 时间预设按钮点击
+                timePresetBtns.forEach(btn => {
+                    addEventListener(btn, 'click', function() {
+                        const duration = parseInt(this.textContent);
+                        
+                        // 更新按钮选中状态
+                        timePresetBtns.forEach(b => {
+                            b.classList.remove('bg-white', 'text-primary-600');
+                            b.classList.add('hover:bg-white/10');
+                        });
+                        this.classList.remove('hover:bg-white/10');
+                        this.classList.add('bg-white', 'text-primary-600');
+                        
+                        // 重置计时器
+                        resetTimer(duration);
+                    });
+                });
+                
+                // 开始/暂停按钮点击
+                addEventListener(btnTimerToggle, 'click', () => {
+                    if (timerState.isRunning) {
+                        stopTimer();
+                    } else {
+                        startTimer();
+                    }
+                });
+                
+                // 关闭提醒弹窗
+                addEventListener(btnCloseToast, 'click', hideReminder);
+                
+                // 提醒弹窗中的"去拉伸"按钮
+                const btnGoStretch = notificationToast.querySelector('button:first-of-type');
+                if (btnGoStretch) {
+                    addEventListener(btnGoStretch, 'click', () => {
+                        hideReminder();
+                        resetTimer();
+                    });
+                }
+                
+                // 提醒弹窗中的"延后10分钟"按钮
+                const btnDelay = notificationToast.querySelector('button:last-of-type');
+                if (btnDelay) {
+                    addEventListener(btnDelay, 'click', delayTimer);
+                }
+                
+                // 设置面板中的声音开关
+                const soundToggle = document.querySelector('.setting-toggle-btn:nth-of-type(2)');
+                if (soundToggle) {
+                    addEventListener(soundToggle, 'click', function() {
+                        settings.soundEnabled = !settings.soundEnabled;
+                        saveSettings();
+                        updateSettingsUI();
+                    });
+                }
+                
+                // 设置面板中的时间预设（同步更新）
+                const settingTimeBtns = document.querySelectorAll('.setting-option-btn');
+                settingTimeBtns.forEach(btn => {
+                    addEventListener(btn, 'click', function() {
+                        const duration = parseInt(this.textContent);
+                        if (duration === 30 || duration === 45 || duration === 60) {
+                            resetTimer(duration);
+                        }
+                    });
+                });
+            }
+            
+            // ==================== 公开接口 ====================
+            return {
+                init: init,
+                start: startTimer,
+                stop: stopTimer,
+                reset: resetTimer,
+                delay: delayTimer,
+                getState: () => ({ ...timerState }),
+                getSettings: () => ({ ...settings })
+            };
+        })();
+        
+        // 初始化久坐提醒模块
+        document.addEventListener('DOMContentLoaded', () => {
+            SittingReminder.init();
+        });
+        
+        // ==================== 姿态识别模块 ====================
+        const PoseDetector = (function() {
+            // ==================== 常量定义 ====================
+            
+            // MediaPipe Pose 关键点索引
+            const LANDMARKS = {
+                NOSE: 0,
+                LEFT_SHOULDER: 11,
+                RIGHT_SHOULDER: 12,
+                LEFT_ELBOW: 13,
+                RIGHT_ELBOW: 14,
+                LEFT_WRIST: 15,
+                RIGHT_WRIST: 16,
+                LEFT_HIP: 23,
+                RIGHT_HIP: 24,
+                LEFT_EYE: 1,
+                RIGHT_EYE: 2,
+                LEFT_EAR: 3,
+                RIGHT_EAR: 4
+            };
+            
+            // 姿态判断阈值（基于关键点坐标计算）
+            const THRESHOLDS = {
+                // 头部前倾：鼻子Y坐标与肩膀Y坐标的差值比例
+                // 正常坐姿时，鼻子在肩膀上方（Y值更小）
+                // 头部前倾时，鼻子会向前（X偏移）且可能向下
+                HEAD_FORWARD: {
+                    // 鼻子相对于肩膀的水平偏移比例（相对于肩宽）
+                    horizontalOffset: 0.25,
+                    // 鼻子相对于肩膀中心的垂直位置（低于肩膀中心）
+                    verticalOffset: 0.15
+                },
+                // 耸肩：肩膀Y坐标与臀部Y坐标的差值比例
+                // 正常坐姿时，肩膀在臀部上方
+                // 耸肩时，肩膀会上提
+                SHOULDER_SHRUG: {
+                    // 肩膀与臀部的垂直距离比例（相对于身体高度）
+                    minDistanceRatio: 0.25
+                },
+                // 含胸：肩膀中心与臀部中心的水平偏移
+                // 正常坐姿时，肩膀和臀部中心对齐
+                // 含胸时，肩膀会向前（X偏移）
+                HUNCHBACK: {
+                    // 肩膀中心相对于臀部中心的水平偏移比例
+                    forwardOffset: 0.12
+                }
+            };
+            
+            // ==================== DOM 元素 ====================
+            const video = document.getElementById('pose-video');
+            const canvas = document.getElementById('pose-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const poseInitTip = document.getElementById('pose-init-tip');
+            const poseLoading = document.getElementById('pose-loading');
+            const posePermissionDenied = document.getElementById('pose-permission-denied');
+            const poseStatusIndicator = document.getElementById('pose-status-indicator');
+            const poseStatusLabel = document.getElementById('pose-status-label');
+            const poseStatusBadge = document.getElementById('pose-status-badge');
+            
+            const btnStartPose = document.getElementById('btn-start-pose');
+            const btnCameraToggle = document.getElementById('btn-camera-toggle');
+            const btnRetryCamera = document.getElementById('btn-retry-camera');
+            
+            // 状态卡片元素
+            const statusHeadForward = document.getElementById('status-head-forward');
+            const statusShoulderShrug = document.getElementById('status-shoulder-shrug');
+            const statusHunchback = document.getElementById('status-hunchback');
+            
+            // ==================== 状态变量 ====================
+            let pose = null;
+            let cameraStream = null;
+            let isRunning = false;
+            let isModelLoaded = false;
+            let animationId = null;
+            let eventListeners = [];       // 保存事件监听器引用用于清理
+            let resizeTimeout = null;      // resize 防抖定时器
+            
+            // 当前姿态检测结果
+            let currentPosture = {
+                headForward: 'normal',
+                shoulderShrug: 'normal',
+                hunchback: 'normal'
+            };
+            
+            // ==================== 初始化 ====================
+            function init() {
+                bindEvents();
+            }
+            
+            // ==================== MediaPipe Pose 初始化流程 ====================
+            
+            /**
+             * 加载 MediaPipe Pose 模型
+             */
+            async function loadModel() {
+                if (isModelLoaded) return;
+                
+                showLoading(true);
+                
+                try {
+                    // 创建 Pose 实例
+                    pose = new Pose({
+                        locateFile: (file) => {
+                            return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                        }
+                    });
+                    
+                    // 配置 Pose 参数（性能优化）
+                    pose.setOptions({
+                        modelComplexity: 0,           // 0 = 轻量模型，1 = 全量模型
+                        smoothLandmarks: true,        // 平滑关键点，减少抖动
+                        enableSegmentation: false,    // 关闭分割功能，提升性能
+                        minDetectionConfidence: 0.5,  // 最小检测置信度
+                        minTrackingConfidence: 0.5    // 最小追踪置信度
+                    });
+                    
+                    // 设置结果回调
+                    pose.onResults(onResults);
+                    
+                    isModelLoaded = true;
+                    console.log('MediaPipe Pose 模型加载成功');
+                } catch (error) {
+                    console.error('加载 MediaPipe Pose 模型失败:', error);
+                    showError('模型加载失败，请检查网络连接');
+                } finally {
+                    showLoading(false);
+                }
+            }
+            
+            /**
+             * 请求摄像头权限并获取视频流
+             */
+            async function requestCamera() {
+                // 定义多种摄像头配置，按优先级尝试
+                const constraintsList = [
+                    // 配置1：前置摄像头，中等分辨率
+                    { video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 30 } } },
+                    // 配置2：前置摄像头，基础配置
+                    { video: { facingMode: 'user' } },
+                    // 配置3：任意摄像头，中等分辨率
+                    { video: { width: { ideal: 640 }, height: { ideal: 480 } } },
+                    // 配置4：任意摄像头，最低配置
+                    { video: true }
+                ];
+                
+                for (let i = 0; i < constraintsList.length; i++) {
+                    try {
+                        const constraints = constraintsList[i];
+                        cameraStream = await navigator.mediaDevices.getUserMedia({
+                            ...constraints,
+                            audio: false
+                        });
+                        
+                        video.srcObject = cameraStream;
+                        
+                        // 等待视频加载并播放
+                        await new Promise((resolve, reject) => {
+                            video.onloadedmetadata = () => {
+                                video.play().then(resolve).catch(reject);
+                            };
+                            video.onerror = reject;
+                        });
+                        
+                        // 调整 Canvas 尺寸匹配视频
+                        resizeCanvas();
+                        
+                        return true;
+                    } catch (error) {
+                        console.warn('尝试摄像头配置失败 (配置' + (i + 1) + '):', error);
+                        // 释放已获取的流（如果有）
+                        if (cameraStream) {
+                            cameraStream.getTracks().forEach(track => track.stop());
+                            cameraStream = null;
+                        }
+                        // 继续尝试下一个配置
+                        continue;
+                    }
+                }
+                
+                // 所有配置都失败
+                showPermissionDenied(true);
+                return false;
+            }
+            
+            /**
+             * 调整 Canvas 尺寸
+             */
+            function resizeCanvas() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width * window.devicePixelRatio;
+                canvas.height = rect.height * window.devicePixelRatio;
+                // 使用 setTransform 重置并设置新的缩放，避免累积
+                ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            }
+            
+            /**
+             * 开始姿态检测
+             */
+            async function startDetection() {
+                if (isRunning) return;
+                
+                // 加载模型
+                await loadModel();
+                
+                // 请求摄像头
+                const cameraReady = await requestCamera();
+                if (!cameraReady) return;
+                
+                // 更新 UI 状态
+                isRunning = true;
+                updateStartButton();
+                showInitTip(false);
+                showPermissionDenied(false);
+                showStatusIndicator(true);
+                
+                // 开始处理帧
+                processVideoFrame();
+            }
+            
+            /**
+             * 停止姿态检测
+             */
+            function stopDetection() {
+                if (!isRunning) return;
+                
+                isRunning = false;
+                
+                // 取消动画帧
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                
+                // 释放摄像头资源
+                releaseCamera();
+                
+                // 更新 UI 状态
+                updateStartButton();
+                showInitTip(true);
+                showStatusIndicator(false);
+                
+                // 清空画布
+                ctx.clearRect(0, 0, canvas.width / window.devicePixelRatio, canvas.height / window.devicePixelRatio);
+                
+                // 重置姿态状态
+                resetPostureStatus();
+            }
+            
+            /**
+             * 释放摄像头资源
+             */
+            function releaseCamera() {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => {
+                        track.stop();
+                    });
+                    cameraStream = null;
+                }
+                video.srcObject = null;
+                // 清理事件回调
+                video.onloadedmetadata = null;
+                video.onerror = null;
+            }
+            
+            /**
+             * 安全添加事件监听器并保存引用
+             */
+            function addEventListener(target, type, handler) {
+                target.addEventListener(type, handler);
+                eventListeners.push({ target, type, handler });
+            }
+            
+            /**
+             * 清理所有资源
+             */
+            function cleanup() {
+                stopDetection();
+                
+                // 移除所有事件监听器
+                eventListeners.forEach(({ target, type, handler }) => {
+                    target.removeEventListener(type, handler);
+                });
+                eventListeners = [];
+                
+                // 清理 resize 防抖定时器
+                if (resizeTimeout) {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = null;
+                }
+                
+                // 关闭 Pose 模型
+                if (pose) {
+                    pose.close();
+                    pose = null;
+                }
+            }
+            
+            /**
+             * 处理视频帧（主循环）
+             */
+            async function processVideoFrame() {
+                if (!isRunning || !video || !pose) return;
+                
+                try {
+                    // 发送帧到 Pose 模型进行检测
+                    await pose.send({ image: video });
+                } catch (error) {
+                    console.error('发送帧到模型失败:', error);
+                }
+                
+                // 继续处理下一帧
+                if (isRunning) {
+                    animationId = requestAnimationFrame(processVideoFrame);
+                }
+            }
+            
+            // ==================== 姿态判断逻辑 ====================
+            
+            /**
+             * Pose 检测结果回调
+             */
+            function onResults(results) {
+                if (!isRunning) return;
+                
+                // 清空画布
+                const rect = canvas.getBoundingClientRect();
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                
+                // 检查是否检测到人体
+                if (results.poseLandmarks && results.poseLandmarks.length > 0) {
+                    const landmarks = results.poseLandmarks;
+                    
+                    // 绘制姿态骨架
+                    drawSkeleton(landmarks);
+                    
+                    // 分析姿态
+                    analyzePosture(landmarks);
+                    
+                    // 更新状态 UI
+                    updatePostureUI();
+                } else {
+                    // 未检测到人体
+                    poseStatusLabel.textContent = '未检测到';
+                    poseStatusLabel.className = 'px-2 py-1 bg-gray-500 text-white text-xs rounded-full';
+                }
+            }
+            
+            /**
+             * 绘制姿态骨架
+             */
+            function drawSkeleton(landmarks) {
+                const rect = canvas.getBoundingClientRect();
+                
+                // 设置画笔样式
+                ctx.strokeStyle = 'rgba(34, 197, 94, 0.7)';
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                // 绘制关键点
+                ctx.fillStyle = 'rgba(34, 197, 94, 0.9)';
+                landmarks.forEach(landmark => {
+                    const x = landmark.x * rect.width;
+                    const y = landmark.y * rect.height;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                // 绘制连接线（仅绘制上半身关键部位）
+                const connections = [
+                    [LANDMARKS.NOSE, LANDMARKS.LEFT_EYE],
+                    [LANDMARKS.NOSE, LANDMARKS.RIGHT_EYE],
+                    [LANDMARKS.LEFT_EYE, LANDMARKS.LEFT_EAR],
+                    [LANDMARKS.RIGHT_EYE, LANDMARKS.RIGHT_EAR],
+                    [LANDMARKS.NOSE, LANDMARKS.LEFT_SHOULDER],
+                    [LANDMARKS.NOSE, LANDMARKS.RIGHT_SHOULDER],
+                    [LANDMARKS.LEFT_SHOULDER, LANDMARKS.RIGHT_SHOULDER],
+                    [LANDMARKS.LEFT_SHOULDER, LANDMARKS.LEFT_ELBOW],
+                    [LANDMARKS.RIGHT_SHOULDER, LANDMARKS.RIGHT_ELBOW],
+                    [LANDMARKS.LEFT_ELBOW, LANDMARKS.LEFT_WRIST],
+                    [LANDMARKS.RIGHT_ELBOW, LANDMARKS.RIGHT_WRIST],
+                    [LANDMARKS.LEFT_SHOULDER, LANDMARKS.LEFT_HIP],
+                    [LANDMARKS.RIGHT_SHOULDER, LANDMARKS.RIGHT_HIP],
+                    [LANDMARKS.LEFT_HIP, LANDMARKS.RIGHT_HIP]
+                ];
+                
+                connections.forEach(([start, end]) => {
+                    const startLandmark = landmarks[start];
+                    const endLandmark = landmarks[end];
+                    
+                    if (startLandmark && endLandmark) {
+                        const x1 = startLandmark.x * rect.width;
+                        const y1 = startLandmark.y * rect.height;
+                        const x2 = endLandmark.x * rect.width;
+                        const y2 = endLandmark.y * rect.height;
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                });
+            }
+            
+            /**
+             * 分析姿态（核心算法）
+             */
+            function analyzePosture(landmarks) {
+                // 获取关键点坐标
+                const nose = landmarks[LANDMARKS.NOSE];
+                const leftShoulder = landmarks[LANDMARKS.LEFT_SHOULDER];
+                const rightShoulder = landmarks[LANDMARKS.RIGHT_SHOULDER];
+                const leftHip = landmarks[LANDMARKS.LEFT_HIP];
+                const rightHip = landmarks[LANDMARKS.RIGHT_HIP];
+                
+                // 计算关键参考点
+                const shoulderCenter = {
+                    x: (leftShoulder.x + rightShoulder.x) / 2,
+                    y: (leftShoulder.y + rightShoulder.y) / 2
+                };
+                
+                const hipCenter = {
+                    x: (leftHip.x + rightHip.x) / 2,
+                    y: (leftHip.y + rightHip.y) / 2
+                };
+                
+                // 计算肩宽和身体高度
+                const shoulderWidth = Math.abs(leftShoulder.x - rightShoulder.x);
+                const bodyHeight = Math.abs(hipCenter.y - shoulderCenter.y);
+                
+                // 1. 检测头部前倾
+                // 判断逻辑：鼻子相对于肩膀中心的水平偏移
+                const headHorizontalOffset = Math.abs(nose.x - shoulderCenter.x);
+                const headForwardRatio = headHorizontalOffset / shoulderWidth;
+                
+                // 同时检查垂直位置（头部过低）
+                const headVerticalDiff = nose.y - shoulderCenter.y;
+                const headVerticalRatio = headVerticalDiff / bodyHeight;
+                
+                if (headForwardRatio > THRESHOLDS.HEAD_FORWARD.horizontalOffset || 
+                    headVerticalRatio > THRESHOLDS.HEAD_FORWARD.verticalOffset) {
+                    currentPosture.headForward = 'warning';
+                } else {
+                    currentPosture.headForward = 'normal';
+                }
+                
+                // 2. 检测耸肩
+                // 判断逻辑：肩膀与臀部的垂直距离过小
+                const shoulderHipDistance = bodyHeight;
+                const shoulderHipRatio = shoulderHipDistance / (hipCenter.y - nose.y); // 相对于总身高
+                
+                if (shoulderHipRatio < THRESHOLDS.SHOULDER_SHRUG.minDistanceRatio) {
+                    currentPosture.shoulderShrug = 'warning';
+                } else {
+                    currentPosture.shoulderShrug = 'normal';
+                }
+                
+                // 3. 检测含胸
+                // 判断逻辑：肩膀中心相对于臀部中心的水平偏移
+                const hunchbackOffset = Math.abs(shoulderCenter.x - hipCenter.x);
+                const hunchbackRatio = hunchbackOffset / shoulderWidth;
+                
+                if (hunchbackRatio > THRESHOLDS.HUNCHBACK.forwardOffset) {
+                    currentPosture.hunchback = 'warning';
+                } else {
+                    currentPosture.hunchback = 'normal';
+                }
+            }
+            
+            /**
+             * 更新姿态状态 UI
+             */
+            function updatePostureUI() {
+                // 更新头部前倾状态
+                updateStatusCard(statusHeadForward, currentPosture.headForward, '头部姿势', '头部前倾');
+                
+                // 更新耸肩状态
+                updateStatusCard(statusShoulderShrug, currentPosture.shoulderShrug, '肩部状态', '耸肩');
+                
+                // 更新含胸状态
+                updateStatusCard(statusHunchback, currentPosture.hunchback, '背部姿态', '含胸');
+                
+                // 更新整体状态标签
+                const hasWarning = Object.values(currentPosture).some(status => status === 'warning');
+                if (hasWarning) {
+                    poseStatusLabel.textContent = '需调整';
+                    poseStatusLabel.className = 'px-2 py-1 bg-orange-500 text-white text-xs rounded-full';
+                    poseStatusBadge.innerHTML = '<span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse-soft"></span> 检测中';
+                } else {
+                    poseStatusLabel.textContent = '正常';
+                    poseStatusLabel.className = 'px-2 py-1 bg-green-500 text-white text-xs rounded-full';
+                    poseStatusBadge.innerHTML = '<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse-soft"></span> 检测中';
+                }
+            }
+            
+            /**
+             * 更新单个状态卡片
+             */
+            function updateStatusCard(cardElement, status, title, warningText) {
+                const icon = cardElement.querySelector('svg');
+                const titleSpan = cardElement.querySelector('.text-muted-700');
+                const statusSpan = cardElement.querySelector('.font-medium');
+                
+                if (status === 'warning') {
+                    // 警告状态
+                    cardElement.className = 'flex items-center justify-between p-3 bg-soft-orange rounded-xl';
+                    icon.setAttribute('data-lucide', 'alert-circle');
+                    icon.className = 'w-4 h-4 text-orange-500';
+                    statusSpan.textContent = warningText;
+                    statusSpan.className = 'text-xs text-orange-500 font-medium';
+                } else {
+                    // 正常状态
+                    cardElement.className = 'flex items-center justify-between p-3 bg-soft-green rounded-xl';
+                    icon.setAttribute('data-lucide', 'check-circle');
+                    icon.className = 'w-4 h-4 text-green-500';
+                    statusSpan.textContent = '正常';
+                    statusSpan.className = 'text-xs text-green-500 font-medium';
+                }
+                
+                // 只重新渲染当前卡片的图标，而非全局
+                lucide.createIcons({
+                    root: cardElement
+                });
+            }
+            
+            /**
+             * 重置姿态状态
+             */
+            function resetPostureStatus() {
+                currentPosture = {
+                    headForward: 'normal',
+                    shoulderShrug: 'normal',
+                    hunchback: 'normal'
+                };
+                
+                updateStatusCard(statusHeadForward, 'normal', '头部姿势', '头部前倾');
+                updateStatusCard(statusShoulderShrug, 'normal', '肩部状态', '耸肩');
+                updateStatusCard(statusHunchback, 'normal', '背部姿态', '含胸');
+                
+                poseStatusBadge.innerHTML = '<span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse-soft"></span> 可使用';
+            }
+            
+            // ==================== UI 控制函数 ====================
+            
+            function showInitTip(show) {
+                if (show) {
+                    poseInitTip.classList.remove('hidden');
+                } else {
+                    poseInitTip.classList.add('hidden');
+                }
+            }
+            
+            function showLoading(show) {
+                if (show) {
+                    poseLoading.classList.remove('hidden');
+                } else {
+                    poseLoading.classList.add('hidden');
+                }
+            }
+            
+            function showPermissionDenied(show) {
+                if (show) {
+                    posePermissionDenied.classList.remove('hidden');
+                } else {
+                    posePermissionDenied.classList.add('hidden');
+                }
+            }
+            
+            function showStatusIndicator(show) {
+                if (show) {
+                    poseStatusIndicator.classList.remove('hidden');
+                } else {
+                    poseStatusIndicator.classList.add('hidden');
+                }
+            }
+            
+            function showError(message) {
+                alert(message);
+                stopDetection();
+            }
+            
+            function updateStartButton() {
+                const icon = btnStartPose.querySelector('svg');
+                const text = btnStartPose.querySelector('span');
+                
+                if (isRunning) {
+                    icon.setAttribute('data-lucide', 'square');
+                    text.textContent = '停止监测';
+                    btnStartPose.classList.remove('from-primary-500', 'to-primary-600');
+                    btnStartPose.classList.add('from-red-500', 'to-red-600');
+                } else {
+                    icon.setAttribute('data-lucide', 'play');
+                    text.textContent = '开始实时监测';
+                    btnStartPose.classList.remove('from-red-500', 'to-red-600');
+                    btnStartPose.classList.add('from-primary-500', 'to-primary-600');
+                }
+                
+                // 只重新渲染当前按钮的图标，而非全局
+                lucide.createIcons({
+                    root: btnStartPose
+                });
+            }
+            
+            // ==================== 事件绑定 ====================
+            function bindEvents() {
+                // 开始/停止按钮
+                addEventListener(btnStartPose, 'click', () => {
+                    if (isRunning) {
+                        stopDetection();
+                    } else {
+                        startDetection();
+                    }
+                });
+                
+                // 摄像头开关按钮（同开始/停止）
+                addEventListener(btnCameraToggle, 'click', () => {
+                    if (isRunning) {
+                        stopDetection();
+                    } else {
+                        startDetection();
+                    }
+                });
+                
+                // 重新授权按钮
+                addEventListener(btnRetryCamera, 'click', () => {
+                    showPermissionDenied(false);
+                    startDetection();
+                });
+                
+                // 窗口大小变化时调整 Canvas（带防抖）
+                addEventListener(window, 'resize', () => {
+                    if (resizeTimeout) {
+                        clearTimeout(resizeTimeout);
+                    }
+                    resizeTimeout = setTimeout(() => {
+                        if (isRunning) {
+                            resizeCanvas();
+                        }
+                    }, 200);
+                });
+                
+                // 页面关闭时释放资源
+                addEventListener(window, 'beforeunload', cleanup);
+                addEventListener(window, 'unload', cleanup);
+            }
+            
+            // ==================== 公开接口 ====================
+            return {
+                init: init,
+                start: startDetection,
+                stop: stopDetection,
+                cleanup: cleanup,
+                getPosture: () => ({ ...currentPosture }),
+                isRunning: () => isRunning
+            };
+        })();
+        
+        // 初始化姿态识别模块
+        document.addEventListener('DOMContentLoaded', () => {
+            PoseDetector.init();
+        });
+        
+        // ==================== 统计周期按钮交互 ====================
+        document.querySelectorAll('.stat-period-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 清除同组按钮的选中状态
+                const group = this.parentElement;
+                group.querySelectorAll('.stat-period-btn').forEach(b => {
+                    b.classList.remove('bg-primary-500', 'text-white');
+                    b.classList.add('text-muted-500', 'hover:bg-muted-50');
+                });
+                // 设置当前按钮为选中状态
+                this.classList.remove('text-muted-500', 'hover:bg-muted-50');
+                this.classList.add('bg-primary-500', 'text-white');
+            });
+        });
+        
+        // ==================== 周趋势图表 ====================
+        const ctx = document.getElementById('weekly-chart').getContext('2d');
+        
+        // 假数据：本周健康趋势
+        const weeklyData = {
+            labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+            datasets: [
+                {
+                    label: '良好姿态占比(%)',
+                    data: [72, 78, 75, 82, 79, 85, 80],
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    yAxisID: 'y',
+                    fill: true,
+                },
+                {
+                    label: '工作时长(小时)',
+                    data: [5.5, 6.2, 5.8, 6.5, 5.0, 4.0, 4.5],
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    borderColor: 'rgba(168, 85, 247, 1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    yAxisID: 'y1',
+                    fill: true,
+                },
+                {
+                    label: '拉伸次数',
+                    data: [3, 4, 3, 5, 4, 6, 5],
+                    backgroundColor: 'rgba(251, 146, 60, 1)',
+                    borderColor: 'rgba(251, 146, 60, 1)',
+                    borderWidth: 0,
+                    yAxisID: 'y2',
+                    type: 'bar',
+                    borderRadius: 4,
+                }
+            ]
+        };
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: weeklyData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1f2937',
+                        bodyColor: '#6b7280',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: true,
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: {
+                                size: 12,
+                            }
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        min: 0,
+                        max: 100,
+                        grid: {
+                            color: '#f3f4f6',
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: {
+                                size: 12,
+                            },
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        title: {
+                            display: false,
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: false,
+                        position: 'right',
+                        min: 0,
+                        max: 10,
+                        grid: {
+                            drawOnChartArea: false,
+                        }
+                    },
+                    y2: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        min: 0,
+                        max: 10,
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        ticks: {
+                            color: '#fb923c',
+                            font: {
+                                size: 12,
+                            }
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            }
+        });
+        
+        
+        
+        // ==================== 滚动时导航栏样式变化 ====================
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-soft');
+            } else {
+                header.classList.remove('shadow-soft');
+            }
+        });
+    </script>
+</body>
+</html>
