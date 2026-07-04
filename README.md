@@ -202,8 +202,8 @@ MIT License - 详见 [LICENSE](LICENSE)
 
 如有问题或建议，欢迎通过以下方式联系：
 
-- 项目地址: [https://github.com/yourname/WorkEase](https://github.com/yourname/WorkEase)
-- 邮箱: your@email.com
+- 项目地址: [https://github.com/fangshilin666/WorkEase](https://github.com/fangshilin666/WorkEase)
+- 邮箱: 2094821175@qq.com
 
 ---
 
