@@ -5,6 +5,7 @@
 ![WorkEase](https://img.shields.io/badge/WorkEase-v1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/Platform-Web-blue.svg)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg)](https://fangshilin666.github.io/workplace-health-assistant/)
 
 ---
 
