@@ -1,0 +1,499 @@
+/* ==================== 智能教练卡片样式 ==================== */
+
+.smart-coach-card {
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-soft-green) 50%, var(--color-soft-blue) 100%);
+    border-radius: var(--radius-2xl);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.smart-coach-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.smart-coach-bg-decoration {
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.smart-coach-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    position: relative;
+    z-index: 1;
+}
+
+.smart-coach-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, var(--color-primary-400) 0%, var(--color-secondary-400) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    flex-shrink: 0;
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.smart-coach-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+}
+
+.smart-coach-avatar-icon {
+    width: 28px;
+    height: 28px;
+    color: white;
+}
+
+.smart-coach-title-area {
+    flex: 1;
+}
+
+.smart-coach-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-primary-700);
+    margin-bottom: 2px;
+}
+
+.smart-coach-subtitle {
+    font-size: var(--font-size-xs);
+    color: var(--color-primary-600);
+    opacity: 0.8;
+}
+
+.smart-coach-content {
+    margin-top: var(--spacing-5);
+    position: relative;
+    z-index: 1;
+}
+
+.smart-coach-action-card {
+    background-color: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-5);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.smart-coach-action-card.animate-enter {
+    animation: coachSlideIn 0.4s var(--ease-smooth) forwards;
+}
+
+@keyframes coachSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.smart-coach-action-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-4);
+}
+
+.smart-coach-action-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.smart-coach-action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, var(--color-primary-100) 0%, var(--color-primary-50) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.smart-coach-action-icon:hover {
+    transform: scale(1.05);
+}
+
+.smart-coach-action-icon i {
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary-600);
+}
+
+.smart-coach-action-name {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-muted-800);
+}
+
+.smart-coach-action-duration {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-size-xs);
+    color: var(--color-muted-400);
+    margin-top: 2px;
+}
+
+.smart-coach-score-tag {
+    background: linear-gradient(135deg, var(--color-success-50) 0%, var(--color-primary-50) 100%);
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.smart-coach-score-tag:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+}
+
+.smart-coach-score-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--color-success-500);
+}
+
+.smart-coach-score-text {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-success-600);
+}
+
+.smart-coach-reason {
+    background-color: var(--color-muted-50);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-3);
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.smart-coach-reason-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-muted-500);
+    margin-bottom: 4px;
+}
+
+.smart-coach-reason-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-muted-700);
+    line-height: 1.5;
+}
+
+.smart-coach-improve {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.smart-coach-improve-label {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--color-muted-500);
+}
+
+.smart-coach-improve-tags {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+.smart-coach-improve-tag {
+    padding: 4px 10px;
+    background-color: var(--color-soft-green);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    color: var(--color-primary-700);
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.smart-coach-improve-tag:hover {
+    transform: translateY(-1px);
+    background-color: var(--color-primary-100);
+}
+
+.smart-coach-actions {
+    display: flex;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-5);
+}
+
+.smart-coach-btn-primary {
+    flex: 1;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+    color: white;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    transition: all var(--duration-fast) var(--ease-smooth);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.smart-coach-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+}
+
+.smart-coach-btn-primary:active {
+    transform: translateY(0);
+}
+
+.smart-coach-btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3), 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.smart-coach-btn-secondary {
+    padding: 12px 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: var(--color-muted-600);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.smart-coach-btn-secondary:hover {
+    background-color: white;
+    color: var(--color-muted-800);
+}
+
+.smart-coach-btn-secondary:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.smart-coach-btn-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.smart-coach-empty {
+    text-align: center;
+    padding: var(--spacing-8);
+}
+
+.smart-coach-empty-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--spacing-4);
+    opacity: 0.5;
+}
+
+.smart-coach-empty-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-muted-700);
+    margin-bottom: var(--spacing-2);
+}
+
+.smart-coach-empty-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-muted-500);
+    margin-bottom: var(--spacing-4);
+}
+
+.smart-coach-training {
+    text-align: center;
+    padding: var(--spacing-8);
+}
+
+.smart-coach-training-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-4);
+    animation: trainingPulse 2s var(--ease-smooth) infinite;
+}
+
+@keyframes trainingPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+.smart-coach-training-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-muted-800);
+    margin-bottom: var(--spacing-2);
+}
+
+.smart-coach-training-countdown {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--color-primary-600);
+    margin: var(--spacing-4) 0;
+    animation: countdownScale 0.5s var(--ease-smooth);
+}
+
+@keyframes countdownScale {
+    0% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.smart-coach-training-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-muted-500);
+}
+
+.smart-coach-completed {
+    text-align: center;
+    padding: var(--spacing-8);
+}
+
+.smart-coach-completed-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-4);
+    animation: completedBounce 0.6s var(--ease-bounce);
+}
+
+@keyframes completedBounce {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.smart-coach-completed-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-success-600);
+    margin-bottom: var(--spacing-2);
+}
+
+.smart-coach-completed-score {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-muted-700);
+    margin-bottom: var(--spacing-4);
+}
+
+@media (max-width: 640px) {
+    .smart-coach-card {
+        padding: var(--spacing-4);
+    }
+
+    .smart-coach-avatar {
+        width: 48px;
+        height: 48px;
+    }
+
+    .smart-coach-avatar-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .smart-coach-action-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .smart-coach-action-icon i {
+        width: 20px;
+        height: 20px;
+    }
+
+    .smart-coach-action-name {
+        font-size: var(--font-size-base);
+    }
+
+    .smart-coach-actions {
+        flex-direction: column;
+    }
+
+    .smart-coach-btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+[data-theme="darkcode"] .smart-coach-card {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 50%, rgba(59, 130, 246, 0.05) 100%);
+}
+
+[data-theme="darkcode"] .smart-coach-title {
+    color: var(--color-primary-400);
+}
+
+[data-theme="darkcode"] .smart-coach-subtitle {
+    color: var(--color-primary-500);
+}
+
+[data-theme="darkcode"] .smart-coach-action-card {
+    background-color: var(--bg-card);
+}
+
+[data-theme="darkcode"] .smart-coach-action-name {
+    color: var(--color-muted-800);
+}
+
+[data-theme="darkcode"] .smart-coach-reason {
+    background-color: var(--color-muted-100);
+}
+
+[data-theme="darkcode"] .smart-coach-reason-text {
+    color: var(--color-muted-700);
+}
+
+[data-theme="darkcode"] .smart-coach-improve-tag {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: var(--color-primary-400);
+}
+
+[data-theme="darkcode"] .smart-coach-btn-secondary {
+    background-color: var(--color-muted-100);
+    color: var(--color-muted-600);
+}
+
+[data-theme="darkcode"] .smart-coach-btn-secondary:hover {
+    background-color: var(--color-muted-200);
+    color: var(--color-muted-800);
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工位健康助手 - 守护你的每一刻</title>
+    <title>WorkEase - AI智能工位健康助手</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -12,6 +12,44 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- MediaPipe Pose CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+    <!-- 主题样式 -->
+    <link rel="stylesheet" href="styles/theme.css">
+    <!-- 统一动画系统 -->
+    <link rel="stylesheet" href="styles/animation.css">
+    <!-- 统一设计规范 -->
+    <link rel="stylesheet" href="styles/design.css">
+    <!-- 加载体验样式 -->
+    <link rel="stylesheet" href="styles/loading.css">
+    <!-- 健康评分样式 -->
+    <link rel="stylesheet" href="styles/healthScore.css">
+    <!-- 智能教练样式 -->
+    <link rel="stylesheet" href="styles/smartCoach.css">
+    <!-- 智能工作节奏样式 -->
+    <link rel="stylesheet" href="styles/smartRhythm.css">
+    <!-- WorkSense 智能工作状态样式 -->
+    <link rel="stylesheet" href="styles/worksense.css">
+    <!-- AI健康记录样式 -->
+    <link rel="stylesheet" href="styles/healthRecord.css">
+    <!-- 服务层脚本 -->
+    <script src="services/StorageService.js"></script>
+    <script src="services/ThemeService.js"></script>
+    <!-- Toast组件 -->
+    <script src="components/Toast.js"></script>
+    <!-- 健康评分脚本 -->
+    <script src="utils/healthRule.js"></script>
+    <script src="services/HealthService.js"></script>
+    <script src="components/HealthScoreCard.js"></script>
+    <!-- 智能教练脚本 -->
+    <script src="services/SmartCoachService.js"></script>
+    <script src="components/SmartCoachCard.js"></script>
+    <!-- 智能工作节奏脚本 -->
+    <script src="services/rhythm.service.js"></script>
+    <script src="components/SmartRhythmCard.js"></script>
+    <!-- WorkSense 智能工作状态脚本 -->
+    <script src="services/worksense.service.js"></script>
+    <script src="components/WorkSenseCard.js"></script>
+    <!-- AI健康记录脚本 -->
+    <script src="services/healthRecord.service.js"></script>
     <!-- Tailwind 配置：低饱和柔和配色方案 -->
     <script>
         tailwind.config = {
@@ -117,6 +155,15 @@
 </head>
 <body class="bg-soft-gray text-muted-800 min-h-screen">
 
+    <!-- ==================== 页面加载动画 ==================== -->
+    <div id="page-loader" class="page-loader">
+        <div class="page-loader-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring spinner-ring-delay"></div>
+        </div>
+        <div class="page-loader-text">正在启动...</div>
+    </div>
+
     <!-- ==================== 顶部导航栏 ==================== -->
     <header id="header" class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-muted-100 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -127,24 +174,28 @@
                         <i data-lucide="heart-pulse" class="w-6 h-6 text-white"></i>
                     </div>
                     <div>
-                        <h1 class="text-lg font-semibold text-muted-800">工位健康助手</h1>
-                        <p class="text-xs text-muted-400 hidden sm:block">守护你的每一刻</p>
+                        <h1 class="text-lg font-semibold text-muted-800">WorkEase</h1>
+                        <p class="text-xs text-muted-400 hidden sm:block">AI智能工位健康助手</p>
                     </div>
                 </div>
                 
                 <!-- 桌面端导航菜单 -->
                 <nav class="hidden md:flex items-center gap-6">
-                    <a href="#" class="nav-link text-primary-600 font-medium flex items-center gap-2">
+                    <a href="#header" class="nav-link text-primary-600 font-medium flex items-center gap-2">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                         首页
                     </a>
-                    <a href="#" class="nav-link text-muted-500 hover:text-muted-700 font-medium flex items-center gap-2">
+                    <a href="#stretch-section" class="nav-link text-muted-500 hover:text-muted-700 font-medium flex items-center gap-2">
                         <i data-lucide="activity" class="w-4 h-4"></i>
                         拉伸动作
                     </a>
-                    <a href="#" class="nav-link text-muted-500 hover:text-muted-700 font-medium flex items-center gap-2">
+                    <a href="#stats-section" class="nav-link text-muted-500 hover:text-muted-700 font-medium flex items-center gap-2">
                         <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
                         统计分析
+                    </a>
+                    <a href="#health-record-page" id="nav-health-record" class="nav-link text-muted-500 hover:text-muted-700 font-medium flex items-center gap-2">
+                        <i data-lucide="file-heart" class="w-4 h-4"></i>
+                        健康记录
                     </a>
                 </nav>
                 
@@ -175,6 +226,17 @@
     <!-- ==================== 主内容区域 ==================== -->
     <main id="main-content" class="pt-20 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
+        <!-- ==================== 品牌Slogan展示 ==================== -->
+        <section class="text-center mb-8 animate-slide-up">
+            <h2 class="text-2xl sm:text-3xl font-bold text-muted-800 mb-3">不是提醒你休息</h2>
+            <p class="text-lg text-muted-500">而是在最合适的时间提醒你休息</p>
+        </section>
+
+        <!-- ==================== WorkSense AI工作状态卡片 ==================== -->
+        <section id="worksense-section" class="mb-8 animate-slide-up">
+            <div id="worksense-container"></div>
+        </section>
+
         <!-- ==================== 今日健康概览卡片 ==================== -->
         <section id="health-overview" class="mb-8 animate-slide-up">
             <div class="flex items-center justify-between mb-4">
@@ -251,6 +313,16 @@
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- ==================== 智能教练卡片 ==================== -->
+        <section id="smart-coach-section" class="mb-8 animate-slide-up" style="animation-delay: 0.02s;">
+            <div id="smart-coach-container"></div>
+        </section>
+
+        <!-- ==================== 健康评分卡片 ==================== -->
+        <section id="health-score-section" class="mb-8 animate-slide-up" style="animation-delay: 0.05s;">
+            <div id="health-score-container"></div>
         </section>
 
         <!-- ==================== 久坐计时器区域 ==================== -->
@@ -519,6 +591,11 @@
                 </div>
             </div>
         </section>
+
+        <!-- ==================== AI健康记录页面 ==================== -->
+        <section id="health-record-page">
+            <div class="health-record-container" id="health-record-container"></div>
+        </section>
         
     </main>
 
@@ -550,10 +627,10 @@
         <div id="settings-overlay" class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
         
         <!-- 设置面板内容 -->
-        <div id="settings-content" class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl transform transition-transform">
+        <div id="settings-content" class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-card-theme shadow-2xl transform transition-transform">
             <!-- 面板头部 -->
             <div class="flex items-center justify-between p-6 border-b border-muted-100">
-                <h2 class="text-xl font-semibold text-muted-800">设置</h2>
+                <h2 class="text-xl font-semibold text-muted-800">设置中心</h2>
                 <button id="btn-close-settings" class="p-2 rounded-full hover:bg-muted-100 transition-colors">
                     <i data-lucide="x" class="w-5 h-5 text-muted-500"></i>
                 </button>
@@ -561,133 +638,257 @@
             
             <!-- 面板内容 -->
             <div class="p-6 overflow-y-auto h-[calc(100%-80px)]">
-                <!-- 提醒设置 -->
-                <div class="mb-8">
-                    <h3 class="font-medium text-muted-800 mb-4 flex items-center gap-2">
-                        <i data-lucide="bell" class="w-5 h-5 text-primary-500"></i>
-                        提醒设置
-                    </h3>
-                    
-                    <!-- 久坐提醒时长 -->
-                    <div class="mb-4">
-                        <label class="block text-sm text-muted-600 mb-2">久坐提醒时长</label>
-                        <div class="flex bg-muted-50 rounded-xl p-1">
-                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium bg-white shadow-sm text-primary-600">30分钟</button>
-                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium text-muted-500 hover:bg-white/50">45分钟</button>
-                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium text-muted-500 hover:bg-white/50">60分钟</button>
-                        </div>
-                    </div>
-                    
-                    <!-- 护眼提醒 -->
-                    <div class="mb-4">
-                        <label class="block text-sm text-muted-600 mb-2">护眼提醒</label>
-                        <div class="flex items-center justify-between p-4 bg-muted-50 rounded-xl">
-                            <div>
-                                <p class="font-medium text-muted-800">每20分钟提醒休息</p>
-                                <p class="text-xs text-muted-400 mt-1">远眺放松眼部肌肉</p>
-                            </div>
-                            <button class="setting-toggle-btn w-12 h-7 bg-primary-500 rounded-full relative transition-colors">
-                                <span class="absolute top-1 right-1 w-5 h-5 bg-white rounded-full shadow-md transition-all"></span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- 声音提醒 -->
-                    <div class="mb-4">
-                        <label class="block text-sm text-muted-600 mb-2">声音提醒</label>
-                        <div class="flex items-center justify-between p-4 bg-muted-50 rounded-xl">
-                            <div>
-                                <p class="font-medium text-muted-800">播放提醒音效</p>
-                                <p class="text-xs text-muted-400 mt-1">提醒时播放提示音</p>
-                            </div>
-                            <button class="setting-toggle-btn w-12 h-7 bg-primary-500 rounded-full relative transition-colors">
-                                <span class="absolute top-1 right-1 w-5 h-5 bg-white rounded-full shadow-md transition-all"></span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
                 
-                <!-- 姿态识别设置 -->
-                <div class="mb-8">
-                    <h3 class="font-medium text-muted-800 mb-4 flex items-center gap-2">
-                        <i data-lucide="scan-eye" class="w-5 h-5 text-secondary-500"></i>
-                        姿态识别
-                    </h3>
-                    
-                    <!-- 灵敏度设置 -->
-                    <div class="mb-4">
-                        <label class="block text-sm text-muted-600 mb-2">检测灵敏度</label>
-                        <div class="flex bg-muted-50 rounded-xl p-1">
-                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium text-muted-500 hover:bg-white/50">低</button>
-                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium bg-white shadow-sm text-primary-600">中</button>
-                            <button class="setting-option-btn flex-1 py-2 rounded-lg text-sm font-medium text-muted-500 hover:bg-white/50">高</button>
+                <!-- 模块一：提醒设置 -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div class="settings-card-icon bg-soft-blue">
+                            <i data-lucide="bell" class="w-5 h-5 text-blue-500"></i>
+                        </div>
+                        <div>
+                            <div class="settings-card-title">提醒设置</div>
+                            <div class="settings-card-desc">自定义提醒间隔和休息时长</div>
                         </div>
                     </div>
                     
-                    <!-- 自动开始 -->
+                    <!-- 久坐提醒时间 -->
+                    <div class="mb-5">
+                        <label class="block text-sm text-muted-600 mb-3">久坐提醒时间</label>
+                        <div class="flex bg-muted-50 rounded-xl p-1">
+                            <button data-setting="sitReminder" data-value="30" class="setting-option">30分钟</button>
+                            <button data-setting="sitReminder" data-value="45" class="setting-option">45分钟</button>
+                            <button data-setting="sitReminder" data-value="60" class="setting-option">60分钟</button>
+                            <button data-setting="sitReminder" data-value="90" class="setting-option">90分钟</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 护眼提醒时间 -->
+                    <div class="mb-5">
+                        <label class="block text-sm text-muted-600 mb-3">护眼提醒时间</label>
+                        <div class="flex bg-muted-50 rounded-xl p-1">
+                            <button data-setting="eyeReminder" data-value="15" class="setting-option">15分钟</button>
+                            <button data-setting="eyeReminder" data-value="20" class="setting-option">20分钟</button>
+                            <button data-setting="eyeReminder" data-value="30" class="setting-option">30分钟</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 默认休息时长 -->
                     <div>
-                        <label class="block text-sm text-muted-600 mb-2">自动开始监测</label>
-                        <div class="flex items-center justify-between p-4 bg-muted-50 rounded-xl">
-                            <div>
-                                <p class="font-medium text-muted-800">打开页面自动开始</p>
-                                <p class="text-xs text-muted-400 mt-1">进入页面即启动摄像头</p>
-                            </div>
-                            <button class="setting-toggle-btn w-12 h-7 bg-muted-300 rounded-full relative transition-colors">
-                                <span class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow-md transition-all"></span>
-                            </button>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-sm text-muted-600">默认休息时长</label>
+                            <span class="text-sm font-medium text-primary-600" id="rest-time-value">5</span>
+                        </div>
+                        <input type="range" data-setting="restTime" min="1" max="10" value="5" class="settings-slider w-full">
+                        <div class="flex justify-between text-xs text-muted-400 mt-2">
+                            <span>1分钟</span>
+                            <span>10分钟</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- 数据管理 -->
-                <div class="mb-8">
-                    <h3 class="font-medium text-muted-800 mb-4 flex items-center gap-2">
-                        <i data-lucide="database" class="w-5 h-5 text-blue-500"></i>
-                        数据管理
-                    </h3>
+                <!-- 模块二：主题设置 -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div class="settings-card-icon bg-soft-purple">
+                            <i data-lucide="palette" class="w-5 h-5 text-secondary-500"></i>
+                        </div>
+                        <div>
+                            <div class="settings-card-title">主题设置</div>
+                            <div class="settings-card-desc">选择适合你的视觉风格</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <div class="theme-preview" data-theme="forest">
+                            <div class="theme-preview-dots">
+                                <div class="theme-preview-dot" style="background-color: #22c55e"></div>
+                                <div class="theme-preview-dot" style="background-color: #f0fdf4"></div>
+                                <div class="theme-preview-dot" style="background-color: #f8fafc"></div>
+                            </div>
+                            <div class="theme-preview-name">Forest</div>
+                            <div class="theme-preview-desc">浅色护眼</div>
+                        </div>
+                        <div class="theme-preview" data-theme="darkcode">
+                            <div class="theme-preview-dots">
+                                <div class="theme-preview-dot" style="background-color: #0d1117"></div>
+                                <div class="theme-preview-dot" style="background-color: #21262d"></div>
+                                <div class="theme-preview-dot" style="background-color: #00b3b3"></div>
+                            </div>
+                            <div class="theme-preview-name">Dark Code</div>
+                            <div class="theme-preview-desc">深色代码风</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 模块三：声音设置 -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div class="settings-card-icon bg-soft-green">
+                            <i data-lucide="volume-2" class="w-5 h-5 text-primary-500"></i>
+                        </div>
+                        <div>
+                            <div class="settings-card-title">声音设置</div>
+                            <div class="settings-card-desc">控制提醒音效和背景音</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提醒音开关 -->
+                    <div class="flex items-center justify-between mb-4 p-4 bg-muted-50 rounded-xl">
+                        <div>
+                            <p class="font-medium text-muted-800">提醒音</p>
+                            <p class="text-xs text-muted-400 mt-1">提醒时播放提示音</p>
+                        </div>
+                        <div data-setting="sound" class="setting-toggle"></div>
+                    </div>
+                    
+                    <!-- 白噪音开关 -->
+                    <div class="flex items-center justify-between mb-4 p-4 bg-muted-50 rounded-xl">
+                        <div>
+                            <p class="font-medium text-muted-800">白噪音</p>
+                            <p class="text-xs text-muted-400 mt-1">休息时播放背景音</p>
+                        </div>
+                        <div data-setting="music" class="setting-toggle"></div>
+                    </div>
+                    
+                    <!-- 音量滑块 -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-sm text-muted-600">音量</label>
+                            <span class="text-sm font-medium text-primary-600" id="volume-value">60%</span>
+                        </div>
+                        <input type="range" data-setting="volume" min="0" max="100" value="60" class="settings-slider w-full">
+                        <div class="flex justify-between text-xs text-muted-400 mt-2">
+                            <span>静音</span>
+                            <span>最大</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 模块四：AI 设置 -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div class="settings-card-icon bg-soft-orange">
+                            <i data-lucide="scan-eye" class="w-5 h-5 text-orange-500"></i>
+                        </div>
+                        <div>
+                            <div class="settings-card-title">AI 设置</div>
+                            <div class="settings-card-desc">配置姿态识别功能</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 摄像头开关 -->
+                    <div class="flex items-center justify-between mb-4 p-4 bg-muted-50 rounded-xl">
+                        <div>
+                            <p class="font-medium text-muted-800">摄像头</p>
+                            <p class="text-xs text-muted-400 mt-1">允许使用摄像头</p>
+                        </div>
+                        <div data-setting="camera" class="setting-toggle"></div>
+                    </div>
+                    
+                    <!-- 姿态识别开关 -->
+                    <div class="flex items-center justify-between mb-5 p-4 bg-muted-50 rounded-xl">
+                        <div>
+                            <p class="font-medium text-muted-800">姿态识别</p>
+                            <p class="text-xs text-muted-400 mt-1">实时检测不良姿势</p>
+                        </div>
+                        <div data-setting="pose" class="setting-toggle"></div>
+                    </div>
+                    
+                    <!-- 检测灵敏度 -->
+                    <div>
+                        <label class="block text-sm text-muted-600 mb-3">检测灵敏度</label>
+                        <div class="flex bg-muted-50 rounded-xl p-1">
+                            <button data-setting="sensitivity" data-value="low" class="setting-option">Low</button>
+                            <button data-setting="sensitivity" data-value="medium" class="setting-option">Medium</button>
+                            <button data-setting="sensitivity" data-value="high" class="setting-option">High</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 模块五：数据管理 -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div class="settings-card-icon" style="background-color: #eff6ff">
+                            <i data-lucide="database" class="w-5 h-5 text-blue-500"></i>
+                        </div>
+                        <div>
+                            <div class="settings-card-title">数据管理</div>
+                            <div class="settings-card-desc">管理您的健康数据</div>
+                        </div>
+                    </div>
                     
                     <!-- 导出数据 -->
-                    <button class="w-full flex items-center justify-between p-4 bg-muted-50 rounded-xl hover:bg-muted-100 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <button id="btn-export-data" class="data-action-btn">
+                        <div class="flex items-center">
+                            <div class="data-action-icon" style="background-color: #dbeafe">
                                 <i data-lucide="download" class="w-5 h-5 text-blue-500"></i>
                             </div>
-                            <div class="text-left">
-                                <p class="font-medium text-muted-800">导出数据</p>
-                                <p class="text-xs text-muted-400">导出所有健康数据</p>
+                            <div class="data-action-info">
+                                <div class="data-action-title">导出健康数据</div>
+                                <div class="data-action-desc">导出所有数据为 JSON 文件</div>
                             </div>
                         </div>
                         <i data-lucide="chevron-right" class="w-5 h-5 text-muted-400"></i>
                     </button>
                     
-                    <!-- 清除数据 -->
-                    <button class="w-full flex items-center justify-between p-4 bg-red-50 rounded-xl hover:bg-red-100 transition-colors mt-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-                                <i data-lucide="trash-2" class="w-5 h-5 text-red-500"></i>
+                    <!-- 清空数据 -->
+                    <button id="btn-clear-data" class="data-action-btn danger mt-3">
+                        <div class="flex items-center">
+                            <div class="data-action-icon" style="background-color: #fee2e2">
+                                <i data-lucide="trash-2" class="w-5 h-5 text-error-500"></i>
                             </div>
-                            <div class="text-left">
-                                <p class="font-medium text-red-600">清除所有数据</p>
-                                <p class="text-xs text-red-400">删除本地存储的所有数据</p>
+                            <div class="data-action-info">
+                                <div class="data-action-title danger">清空所有数据</div>
+                                <div class="data-action-desc danger">删除本地存储的所有数据</div>
                             </div>
                         </div>
-                        <i data-lucide="chevron-right" class="w-5 h-5 text-red-400"></i>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-error-400"></i>
                     </button>
+                    
+                    <!-- 存储使用情况 -->
+                    <div class="storage-info">
+                        <div class="storage-info-label">LocalStorage 使用情况</div>
+                        <div class="storage-info-bar">
+                            <div id="storage-bar-fill" class="storage-info-fill" style="width: 5%"></div>
+                        </div>
+                        <div id="storage-info-text" class="storage-info-text">0.25 KB / 5 MB</div>
+                    </div>
                 </div>
                 
                 <!-- 关于 -->
-                <div>
-                    <h3 class="font-medium text-muted-800 mb-4 flex items-center gap-2">
-                        <i data-lucide="info" class="w-5 h-5 text-muted-400"></i>
-                        关于
-                    </h3>
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div class="settings-card-icon" style="background-color: #f5f5f5">
+                            <i data-lucide="info" class="w-5 h-5 text-muted-400"></i>
+                        </div>
+                        <div>
+                            <div class="settings-card-title">关于</div>
+                            <div class="settings-card-desc">版本信息与隐私说明</div>
+                        </div>
+                    </div>
                     
                     <div class="p-4 bg-muted-50 rounded-xl">
-                        <p class="font-medium text-muted-800">工位健康助手</p>
-                        <p class="text-sm text-muted-400 mt-1">版本 1.0.0</p>
+                        <p class="font-medium text-muted-800">WorkEase</p>
+                        <p class="text-sm text-muted-400 mt-1">AI智能工位健康助手</p>
+                        <p class="text-xs text-muted-400 mt-2">版本 1.0.0</p>
                         <p class="text-xs text-muted-400 mt-2">基于 MediaPipe Pose 开发，所有数据仅在本地处理，保护您的隐私安全。</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ==================== 保存提示 Toast ==================== -->
+    <div id="save-toast" class="save-toast hidden">已保存</div>
+    
+    <!-- ==================== 确认弹窗 ==================== -->
+    <div id="confirm-modal" class="confirm-modal-overlay hidden">
+        <div class="confirm-modal">
+            <div class="confirm-modal-title">确认清空数据</div>
+            <div class="confirm-modal-desc">此操作将删除所有本地存储的健康数据，包括工作记录、拉伸记录和设置配置。此操作不可恢复。</div>
+            <div class="confirm-modal-actions">
+                <button id="btn-confirm-cancel" class="confirm-modal-btn cancel">取消</button>
+                <button id="btn-confirm-delete" class="confirm-modal-btn confirm">确认清空</button>
             </div>
         </div>
     </div>
@@ -1306,9 +1507,122 @@
             };
         })();
         
-        // 初始化久坐提醒模块
+        // 初始化健康评分模块
+        let healthScoreCard = null;
+        
+        // 智能教练卡片实例
+        let smartCoachCard = null;
+        
+        // 平滑滚动导航
         document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('text-primary-600');
+                            link.classList.add('text-muted-500', 'hover:text-muted-700');
+                        });
+                        this.classList.remove('text-muted-500', 'hover:text-muted-700');
+                        this.classList.add('text-primary-600');
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.mobile-nav-btn').forEach(b => {
+                        b.classList.remove('text-primary-500');
+                        b.classList.add('text-muted-400');
+                    });
+                    this.classList.remove('text-muted-400');
+                    this.classList.add('text-primary-500');
+                    
+                    const sections = ['header', 'stretch-section', 'stats-section', 'health-record-page'];
+                    const index = Array.from(this.parentElement.children).indexOf(this);
+                    if (index < sections.length) {
+                        const targetElement = document.getElementById(sections[index]);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+        });
+        
+        // 更新健康概览数据
+        function updateHealthOverview(healthService) {
+            const healthData = healthService.getTodayHealthData();
+            const score = healthService.calculateScore();
+            
+            const workTimeHours = (healthData.sitMinutes / 60).toFixed(1);
+            const goodPosturePercent = Math.round(healthData.poseGoodRate * 100);
+            const stretchCount = healthData.stretchCount;
+            const reminderCount = healthData.sitRemindersCompleted;
+            
+            const workTimeEl = document.getElementById('stat-work-time');
+            const goodPostureEl = document.getElementById('stat-good-posture');
+            const stretchCountEl = document.getElementById('stat-stretch-count');
+            const reminderCountEl = document.getElementById('stat-reminder-count');
+            
+            if (workTimeEl) workTimeEl.textContent = workTimeHours;
+            if (goodPostureEl) goodPostureEl.textContent = goodPosturePercent + '%';
+            if (stretchCountEl) stretchCountEl.textContent = stretchCount;
+            if (reminderCountEl) reminderCountEl.textContent = reminderCount;
+            
+            const workTimeBar = workTimeEl?.parentElement?.nextElementSibling?.querySelector('div');
+            const goodPostureBar = goodPostureEl?.parentElement?.nextElementSibling?.querySelector('div');
+            const stretchBar = stretchCountEl?.parentElement?.nextElementSibling?.querySelector('div');
+            const reminderBar = reminderCountEl?.parentElement?.nextElementSibling?.querySelector('div');
+            
+            if (workTimeBar) workTimeBar.style.width = Math.min(100, (healthData.sitMinutes / 480) * 100) + '%';
+            if (goodPostureBar) goodPostureBar.style.width = goodPosturePercent + '%';
+            if (stretchBar) stretchBar.style.width = Math.min(100, (stretchCount / 6) * 100) + '%';
+            if (reminderBar) reminderBar.style.width = Math.min(100, (reminderCount / 6) * 100) + '%';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化久坐提醒模块
             SittingReminder.init();
+            
+            // 初始化健康评分卡片
+            if (typeof HealthScoreCard !== 'undefined' && typeof HealthService !== 'undefined') {
+                const storageService = new StorageService();
+                const healthRule = HealthRule;
+                const healthService = new HealthService(storageService, healthRule);
+                
+                healthScoreCard = new HealthScoreCard('health-score-container', healthService);
+                healthScoreCard.render();
+                
+                // 更新健康概览卡片数据
+                updateHealthOverview(healthService);
+                
+                // 全局暴露健康服务供其他模块使用
+                window.healthService = healthService;
+                
+                // 初始化智能教练卡片
+                if (typeof SmartCoachCard !== 'undefined' && typeof SmartCoachService !== 'undefined') {
+                    const coachService = new SmartCoachService(storageService, healthService);
+                    
+                    smartCoachCard = new SmartCoachCard('smart-coach-container', coachService);
+                    smartCoachCard.render();
+                    
+                    // 全局暴露智能教练服务供其他模块使用
+                    window.smartCoachService = coachService;
+                }
+            }
         });
         
         // ==================== 姿态识别模块 ====================
@@ -1890,7 +2204,11 @@
             }
             
             function showError(message) {
-                alert(message);
+                if (typeof toast !== 'undefined') {
+                    toast.error(message);
+                } else {
+                    alert(message);
+                }
                 stopDetection();
             }
             
@@ -2131,6 +2449,633 @@
                 header.classList.add('shadow-soft');
             } else {
                 header.classList.remove('shadow-soft');
+            }
+        });
+
+        // ==================== 设置面板交互逻辑 ====================
+        (function() {
+            // DOM 元素
+            const settingsModal = document.getElementById('settings-modal');
+            const settingsOverlay = document.getElementById('settings-overlay');
+            const btnOpenSettings = document.getElementById('btn-open-settings');
+            const btnCloseSettings = document.getElementById('btn-close-settings');
+            
+            const saveToast = document.getElementById('save-toast');
+            const confirmModal = document.getElementById('confirm-modal');
+            const btnConfirmCancel = document.getElementById('btn-confirm-cancel');
+            const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+            const btnExportData = document.getElementById('btn-export-data');
+            const btnClearData = document.getElementById('btn-clear-data');
+            
+            const storageBarFill = document.getElementById('storage-bar-fill');
+            const storageInfoText = document.getElementById('storage-info-text');
+            
+            const restTimeValue = document.getElementById('rest-time-value');
+            const volumeValue = document.getElementById('volume-value');
+            
+            // 当前设置
+            let currentSettings = {};
+            
+            // 初始化设置
+            function initSettings() {
+                // 加载存储的设置
+                currentSettings = storageService.loadSettings();
+                
+                // 应用主题
+                if (themeService) {
+                    themeService.init();
+                }
+                
+                // 更新 UI 显示
+                updateSettingsUI();
+                
+                // 更新存储使用情况
+                updateStorageInfo();
+            }
+            
+            // 更新设置 UI
+            function updateSettingsUI() {
+                // 更新选项按钮
+                document.querySelectorAll('.setting-option').forEach(btn => {
+                    const settingName = btn.dataset.setting;
+                    const settingValue = btn.dataset.value;
+                    
+                    if (currentSettings[settingName] == settingValue) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                
+                // 更新切换按钮
+                document.querySelectorAll('.setting-toggle').forEach(toggle => {
+                    const settingName = toggle.dataset.setting;
+                    if (currentSettings[settingName]) {
+                        toggle.classList.add('active');
+                    } else {
+                        toggle.classList.remove('active');
+                    }
+                });
+                
+                // 更新滑块和数值显示
+                document.querySelectorAll('.settings-slider').forEach(slider => {
+                    const settingName = slider.dataset.setting;
+                    slider.value = currentSettings[settingName];
+                    
+                    if (settingName === 'restTime') {
+                        restTimeValue.textContent = currentSettings[settingName];
+                    } else if (settingName === 'volume') {
+                        volumeValue.textContent = currentSettings[settingName] + '%';
+                    }
+                });
+                
+                // 更新主题预览
+                document.querySelectorAll('.theme-preview').forEach(preview => {
+                    const themeName = preview.dataset.theme;
+                    if (currentSettings.theme === themeName) {
+                        preview.classList.add('active');
+                    } else {
+                        preview.classList.remove('active');
+                    }
+                });
+            }
+            
+            // 更新存储使用情况
+            function updateStorageInfo() {
+                const info = storageService.getStorageInfo();
+                storageBarFill.style.width = info.percentage + '%';
+                storageInfoText.textContent = info.usedKB + ' KB / ' + info.maxSizeMB + ' MB';
+            }
+            
+            // 保存设置
+            function saveSettings() {
+                const success = storageService.saveSettings(currentSettings);
+                if (success) {
+                    showSaveToast();
+                }
+            }
+            
+            // 显示保存提示
+            function showSaveToast() {
+                if (typeof toast !== 'undefined') {
+                    toast.success('设置已保存');
+                }
+            }
+            
+            // 打开设置面板
+            function openSettings() {
+                settingsModal.classList.remove('hidden');
+                // 重新初始化 UI（确保数据最新）
+                currentSettings = storageService.loadSettings();
+                updateSettingsUI();
+                updateStorageInfo();
+            }
+            
+            // 关闭设置面板
+            function closeSettings() {
+                settingsModal.classList.add('hidden');
+            }
+            
+            // 打开确认弹窗
+            function openConfirmModal() {
+                confirmModal.classList.remove('hidden');
+            }
+            
+            // 关闭确认弹窗
+            function closeConfirmModal() {
+                confirmModal.classList.add('hidden');
+            }
+            
+            // 清空数据
+            function clearAllData() {
+                const success = storageService.clear();
+                if (success) {
+                    // 重新加载默认设置
+                    currentSettings = storageService.loadSettings();
+                    updateSettingsUI();
+                    updateStorageInfo();
+                    closeConfirmModal();
+                    showSaveToast();
+                    
+                    // 重置页面状态（可选）
+                    if (typeof SittingReminder !== 'undefined') {
+                        SittingReminder.reset();
+                    }
+                }
+            }
+            
+            // 导出数据
+            function exportData() {
+                storageService.exportData();
+                showSaveToast();
+            }
+            
+            // 切换设置值
+            function toggleSetting(settingName) {
+                currentSettings[settingName] = !currentSettings[settingName];
+                saveSettings();
+                updateSettingsUI();
+            }
+            
+            // 设置选项值
+            function setSetting(settingName, value) {
+                const numValue = parseFloat(value);
+                currentSettings[settingName] = isNaN(numValue) ? value : numValue;
+                saveSettings();
+                updateSettingsUI();
+            }
+            
+            // 事件绑定
+            function bindSettingsEvents() {
+                // 打开设置按钮
+                if (btnOpenSettings) {
+                    btnOpenSettings.addEventListener('click', openSettings);
+                }
+                
+                // 关闭设置按钮
+                if (btnCloseSettings) {
+                    btnCloseSettings.addEventListener('click', closeSettings);
+                }
+                
+                // 遮罩层点击关闭
+                if (settingsOverlay) {
+                    settingsOverlay.addEventListener('click', closeSettings);
+                }
+                
+                // 选项按钮点击
+                document.querySelectorAll('.setting-option').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const settingName = btn.dataset.setting;
+                        const settingValue = btn.dataset.value;
+                        setSetting(settingName, settingValue);
+                    });
+                });
+                
+                // 切换按钮点击
+                document.querySelectorAll('.setting-toggle').forEach(toggle => {
+                    toggle.addEventListener('click', () => {
+                        const settingName = toggle.dataset.setting;
+                        toggleSetting(settingName);
+                    });
+                });
+                
+                // 滑块变化
+                document.querySelectorAll('.settings-slider').forEach(slider => {
+                    slider.addEventListener('input', () => {
+                        const settingName = slider.dataset.setting;
+                        const value = slider.value;
+                        
+                        // 更新数值显示
+                        if (settingName === 'restTime') {
+                            restTimeValue.textContent = value;
+                        } else if (settingName === 'volume') {
+                            volumeValue.textContent = value + '%';
+                        }
+                    });
+                    
+                    slider.addEventListener('change', () => {
+                        const settingName = slider.dataset.setting;
+                        const value = slider.value;
+                        setSetting(settingName, value);
+                    });
+                });
+                
+                // 主题预览点击
+                document.querySelectorAll('.theme-preview').forEach(preview => {
+                    preview.addEventListener('click', () => {
+                        const themeName = preview.dataset.theme;
+                        if (themeService) {
+                            themeService.setTheme(themeName);
+                        }
+                        // 更新设置并保存
+                        currentSettings.theme = themeName;
+                        saveSettings();
+                        updateSettingsUI();
+                    });
+                });
+                
+                // 导出数据按钮
+                if (btnExportData) {
+                    btnExportData.addEventListener('click', exportData);
+                }
+                
+                // 清空数据按钮
+                if (btnClearData) {
+                    btnClearData.addEventListener('click', openConfirmModal);
+                }
+                
+                // 确认取消按钮
+                if (btnConfirmCancel) {
+                    btnConfirmCancel.addEventListener('click', closeConfirmModal);
+                }
+                
+                // 确认删除按钮
+                if (btnConfirmDelete) {
+                    btnConfirmDelete.addEventListener('click', clearAllData);
+                }
+            }
+            
+            // 页面加载完成后初始化
+            document.addEventListener('DOMContentLoaded', () => {
+                initSettings();
+                bindSettingsEvents();
+            });
+        })();
+
+        // 页面加载完成后隐藏加载动画并初始化组件
+        window.addEventListener('load', () => {
+            const pageLoader = document.getElementById('page-loader');
+            if (pageLoader) {
+                pageLoader.classList.add('page-loader-hide');
+                setTimeout(() => {
+                    pageLoader.remove();
+                }, 500);
+            }
+
+            // 初始化智能工作节奏模块
+            initSmartRhythm();
+        });
+
+        // 初始化智能工作节奏（底层引擎）
+        function initSmartRhythm() {
+            try {
+                // 创建节奏服务实例（底层分析引擎）
+                window.smartRhythmService = new SmartRhythmService(window.storageService);
+                console.log('[SmartRhythm] 智能工作节奏引擎已初始化');
+                
+                // 初始化 WorkSense（上层感知引擎）
+                initWorkSense();
+            } catch (e) {
+                console.error('[SmartRhythm] 初始化失败:', e);
+            }
+        }
+
+        // 初始化 WorkSense AI工作状态感知引擎
+        function initWorkSense() {
+            try {
+                // 创建 WorkSense 服务实例（包装 SmartRhythmService）
+                window.workSenseService = new WorkSenseService(
+                    window.storageService,
+                    window.smartRhythmService
+                );
+                
+                // 创建 WorkSense 卡片组件
+                window.workSenseCard = new WorkSenseCard(
+                    'worksense-container',
+                    window.workSenseService
+                );
+                
+                // 渲染卡片
+                window.workSenseCard.render();
+                
+                console.log('[WorkSense] AI工作状态感知引擎已初始化');
+            } catch (e) {
+                console.error('[WorkSense] 初始化失败:', e);
+            }
+        }
+
+        // 监听状态变化事件，用于集成提醒系统
+        window.addEventListener('rhythm-state-change', (e) => {
+            const { newState } = e.detail;
+            
+            // 如果进入休息状态，建议完成拉伸
+            if (newState === 'relax') {
+                if (typeof toast !== 'undefined') {
+                    toast.info('检测到休息状态，现在是完成拉伸的好时机', {
+                        duration: 4000
+                    });
+                }
+            }
+            
+            // 如果进入专注状态，提示用户
+            if (newState === 'focus') {
+                if (typeof toast !== 'undefined') {
+                    toast.success('进入深度专注模式，提醒将自动延迟', {
+                        duration: 3000
+                    });
+                }
+            }
+        });
+
+        // 初始化 AI 健康记录服务
+        function initHealthRecord() {
+            try {
+                window.healthRecordService = new HealthRecordService(
+                    window.storageService,
+                    window.healthService,
+                    window.workSenseService
+                );
+                console.log('[HealthRecord] AI健康记录服务已初始化');
+            } catch (e) {
+                console.error('[HealthRecord] 初始化失败:', e);
+            }
+        }
+
+        // 页面切换逻辑
+        function showPage(pageName) {
+            const pages = ['home', 'stretch', 'stats', 'health-record'];
+            
+            pages.forEach(p => {
+                const section = document.getElementById(`${p}-page`) || 
+                               document.getElementById(`${p}-section`);
+                if (section) {
+                    section.classList.remove('active');
+                    section.style.display = p === 'health-record' ? 'none' : '';
+                }
+            });
+
+            const activeSection = document.getElementById(`${pageName}-page`) || 
+                                  document.getElementById(`${pageName}-section`);
+            if (activeSection) {
+                if (pageName === 'health-record') {
+                    activeSection.classList.add('active');
+                    activeSection.style.display = 'block';
+                    renderHealthRecord();
+                } else {
+                    activeSection.classList.add('active');
+                }
+            }
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('text-primary-600');
+                link.classList.add('text-muted-500');
+            });
+
+            const activeNav = document.getElementById(`nav-${pageName}`);
+            if (activeNav) {
+                activeNav.classList.remove('text-muted-500');
+                activeNav.classList.add('text-primary-600');
+            }
+        }
+
+        // 渲染健康记录页面
+        function renderHealthRecord() {
+            const container = document.getElementById('health-record-container');
+            if (!container || !window.healthRecordService) return;
+
+            const record = window.healthRecordService.getTodayRecord() || 
+                          window.healthRecordService.generateDailyRecord();
+
+            const difficultyLabels = {
+                easy: '简单',
+                normal: '一般',
+                challenge: '挑战'
+            };
+
+            container.innerHTML = `
+                <!-- 今日健康概览 -->
+                <div class="health-record-header">
+                    <div class="health-record-date">${record.dateStr}</div>
+                    <div class="health-record-score-section">
+                        <div class="health-record-score" id="hr-score">${record.healthScore}</div>
+                        <div class="health-record-level">${record.healthLevel}</div>
+                    </div>
+                    <div class="health-record-summary">"${record.summary}"</div>
+                </div>
+
+                <!-- 今日健康记录（时间轴） -->
+                <div class="health-record-card">
+                    <div class="health-record-card-title">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                        今日健康记录
+                    </div>
+                    <div class="health-record-timeline">
+                        ${record.timeline.map((event, index) => `
+                            <div class="health-record-timeline-item">
+                                <div class="health-record-timeline-dot ${index < record.timeline.length - 1 ? 'completed' : ''}">
+                                    <i data-lucide="${event.icon}" class="w-5 h-5"></i>
+                                </div>
+                                <div class="health-record-timeline-content">
+                                    <div class="health-record-timeline-time">${event.time}</div>
+                                    <div class="health-record-timeline-title">${event.title}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- AI 今日分析 -->
+                <div class="health-record-card">
+                    <div class="health-record-card-title">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        AI 今日分析
+                    </div>
+                    <div class="health-record-analysis">
+                        ${record.analysis.map(item => `
+                            <div class="health-record-analysis-item">${item}</div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- 今日亮点 -->
+                <div class="health-record-card">
+                    <div class="health-record-card-title">
+                        <i data-lucide="star" class="w-5 h-5"></i>
+                        今日亮点
+                    </div>
+                    <div class="health-record-highlights">
+                        ${record.highlights.map(item => `
+                            <div class="health-record-highlight-item">
+                                <div class="health-record-highlight-icon" style="background-color: ${item.color}20; color: ${item.color}">
+                                    <i data-lucide="${item.icon}" class="w-5 h-5"></i>
+                                </div>
+                                <div class="health-record-highlight-text">${item.text}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- 今日需要改善 -->
+                ${record.improvements.length > 0 ? `
+                <div class="health-record-card">
+                    <div class="health-record-card-title">
+                        <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        今日需要改善
+                    </div>
+                    <div class="health-record-improvements">
+                        ${record.improvements.map(item => `
+                            <div class="health-record-improvement-item">
+                                <div class="health-record-improvement-text">${item.text}</div>
+                                <div class="health-record-improvement-suggestion">${item.suggestion}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- 明日目标 -->
+                <div class="health-record-card">
+                    <div class="health-record-card-title">
+                        <i data-lucide="target" class="w-5 h-5"></i>
+                        明日目标
+                    </div>
+                    <div class="health-record-goals">
+                        ${record.tomorrowGoals.goals.map(goal => `
+                            <div class="health-record-goal-item">
+                                <div class="health-record-goal-checkbox"></div>
+                                <div class="health-record-goal-text">${goal.text}</div>
+                                <span class="health-record-goal-difficulty ${goal.difficulty}">${difficultyLabels[goal.difficulty]}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="health-record-goals-footer">
+                        <span class="health-record-goals-difficulty-label">预计完成难度：</span>
+                        <span class="health-record-goals-difficulty-value">${difficultyLabels[record.tomorrowGoals.overallDifficulty]}</span>
+                    </div>
+                </div>
+
+                <!-- 成就徽章 -->
+                <div class="health-record-card">
+                    <div class="health-record-card-title">
+                        <i data-lucide="award" class="w-5 h-5"></i>
+                        成就徽章
+                    </div>
+                    <div class="health-record-badges">
+                        ${record.badges.map(badge => `
+                            <div class="health-record-badge">
+                                <div class="health-record-badge-icon">
+                                    <i data-lucide="${badge.icon}" class="w-5 h-5"></i>
+                                </div>
+                                <div class="health-record-badge-name">${badge.name}</div>
+                            </div>
+                        `).join('')}
+                        ${record.badges.length === 0 ? '<div class="text-muted-400 text-sm w-full text-center">暂无成就，开始健康之旅吧！</div>' : ''}
+                    </div>
+                </div>
+
+                <!-- 分享卡片 -->
+                <div class="health-record-share-card">
+                    <div class="health-record-share-header">
+                        <div class="health-record-share-logo">
+                            <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+                        </div>
+                        <div class="health-record-share-brand">
+                            <div class="health-record-share-brand-name">工位健康助手</div>
+                            <div class="health-record-share-brand-tagline">守护你的每一刻</div>
+                        </div>
+                    </div>
+                    <div class="health-record-share-score">
+                        <div class="health-record-share-score-value">${record.healthScore}</div>
+                        <div class="health-record-share-score-label">健康评分</div>
+                    </div>
+                    <div class="health-record-share-summary">${record.summary}</div>
+                    <div class="health-record-share-badges">
+                        ${record.badges.slice(0, 4).map(badge => `
+                            <div class="health-record-share-badge">
+                                <i data-lucide="${badge.icon}" class="w-5 h-5"></i>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="health-record-share-date">${record.dateStr}</div>
+                    <button class="health-record-share-btn" onclick="shareHealthRecord()">生成分享图片</button>
+                </div>
+            `;
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons({ root: container });
+            }
+
+            animateHealthRecordScore();
+        }
+
+        // 数字滚动动画
+        function animateHealthRecordScore() {
+            const scoreEl = document.getElementById('hr-score');
+            if (!scoreEl) return;
+
+            const target = parseInt(scoreEl.textContent);
+            scoreEl.textContent = '0';
+
+            const duration = 1500;
+            const startTime = performance.now();
+
+            const animate = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(easeOut * target);
+                
+                scoreEl.textContent = current;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            };
+
+            requestAnimationFrame(animate);
+        }
+
+        // 分享健康记录
+        function shareHealthRecord() {
+            if (typeof toast !== 'undefined') {
+                toast.info('分享功能开发中...', {
+                    duration: 3000
+                });
+            }
+        }
+
+        // 绑定导航点击事件
+        document.addEventListener('DOMContentLoaded', () => {
+            const navHealthRecord = document.getElementById('nav-health-record');
+            if (navHealthRecord) {
+                navHealthRecord.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPage('health-record');
+                });
+            }
+
+            const navHome = document.querySelector('.nav-link i[data-lucide="layout-dashboard"]').parentElement;
+            if (navHome) {
+                navHome.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPage('home');
+                });
+            }
+
+            // 初始化健康记录服务
+            if (window.healthService && window.workSenseService) {
+                initHealthRecord();
             }
         });
     </script>

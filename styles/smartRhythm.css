@@ -1,0 +1,305 @@
+/**
+ * SmartRhythm - 智能工作节奏卡片样式
+ */
+
+.smart-rhythm-card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.smart-rhythm-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.smart-rhythm-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  transition: opacity var(--duration-normal) var(--ease-smooth);
+}
+
+.smart-rhythm-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-5);
+}
+
+.smart-rhythm-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.smart-rhythm-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.smart-rhythm-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.smart-rhythm-state-indicator {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.smart-rhythm-state-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: pulse-ring 2s var(--ease-smooth) infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.smart-rhythm-state-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--spacing-5);
+}
+
+.smart-rhythm-state-main {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.smart-rhythm-state-icon {
+  width: 56px;
+  height: 56px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-soft);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.smart-rhythm-state-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.smart-rhythm-state-label {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.smart-rhythm-state-duration {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.smart-rhythm-duration-value {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.smart-rhythm-transition-tip {
+  margin-top: var(--spacing-3);
+  padding: var(--spacing-3);
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.smart-rhythm-tip-show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.smart-rhythm-progress {
+  position: relative;
+  z-index: 1;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--spacing-6);
+}
+
+.smart-rhythm-progress-bar {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--duration-normal) var(--ease-smooth);
+}
+
+.smart-rhythm-stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-4);
+}
+
+.smart-rhythm-stat-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.smart-rhythm-stat-item:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+.smart-rhythm-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.smart-rhythm-stat-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.smart-rhythm-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.smart-rhythm-privacy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* 状态切换动画 */
+.smart-rhythm-fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: all 200ms var(--ease-smooth);
+}
+
+.smart-rhythm-fade-in {
+  opacity: 0;
+  transform: scale(1.02);
+  animation: fade-scale-in 300ms var(--ease-smooth) forwards;
+}
+
+@keyframes fade-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 深色主题适配 */
+[data-theme="darkcode"] .smart-rhythm-card {
+  background-color: var(--bg-card);
+}
+
+[data-theme="darkcode"] .smart-rhythm-bg {
+  opacity: 0.5;
+}
+
+[data-theme="darkcode"] .smart-rhythm-state-icon {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="darkcode"] .smart-rhythm-stat-item {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="darkcode"] .smart-rhythm-stat-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="darkcode"] .smart-rhythm-transition-tip {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="darkcode"] .smart-rhythm-privacy {
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .smart-rhythm-card {
+    padding: var(--spacing-5);
+  }
+  
+  .smart-rhythm-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+  }
+  
+  .smart-rhythm-stat-item {
+    padding: var(--spacing-2);
+  }
+  
+  .smart-rhythm-stat-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .smart-rhythm-state-icon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .smart-rhythm-state-icon i {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .smart-rhythm-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

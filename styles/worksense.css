@@ -1,0 +1,493 @@
+/**
+ * WorkSense - AI工作状态卡片样式
+ * 
+ * 采用 Apple Human Interface 风格设计：
+ * - 毛玻璃效果
+ * - 低饱和度配色
+ * - 大量留白
+ * - 轻微浮动动画
+ * - 数字滚动动画
+ */
+
+.worksense-card {
+  position: relative;
+  border-radius: var(--radius-3xl);
+  padding: var(--spacing-8);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: all var(--duration-normal) var(--ease-smooth);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: worksense-float 6s ease-in-out infinite;
+}
+
+@keyframes worksense-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.worksense-glass {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 0;
+}
+
+[data-theme="darkcode"] .worksense-glass {
+  background: rgba(30, 30, 46, 0.6);
+}
+
+.worksense-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-6px);
+  animation-play-state: paused;
+}
+
+/* 头部 */
+.worksense-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-6);
+}
+
+.worksense-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.worksense-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.worksense-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.worksense-state-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 当前状态区域 */
+.worksense-state-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--spacing-6);
+}
+
+.worksense-state-main {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-5);
+}
+
+.worksense-state-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.worksense-state-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: worksense-pulse 2s ease-out infinite;
+}
+
+@keyframes worksense-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.worksense-state-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.worksense-state-label {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.worksense-state-sub {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* 连续工作时间 */
+.worksense-duration-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-5);
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-2xl);
+}
+
+[data-theme="darkcode"] .worksense-duration-section {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.worksense-duration-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-2);
+}
+
+.worksense-duration-value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-2);
+}
+
+.worksense-duration-number {
+  font-size: 4rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.worksense-duration-unit {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+}
+
+/* AI分析区域 */
+.worksense-ai-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-5);
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-2xl);
+}
+
+[data-theme="darkcode"] .worksense-ai-section {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.worksense-ai-header,
+.worksense-stats-header,
+.worksense-benefit-header,
+.worksense-insight-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+.worksense-ai-content p {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  white-space: pre-line;
+  margin-bottom: var(--spacing-3);
+}
+
+.worksense-ai-recommendation {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  padding-left: var(--spacing-3);
+  border-left: 3px solid;
+}
+
+/* 今日专注统计 */
+.worksense-stats-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-5);
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-2xl);
+}
+
+[data-theme="darkcode"] .worksense-stats-section {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.worksense-stats-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--spacing-4);
+}
+
+.worksense-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.worksense-stat-value {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.worksense-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.worksense-stat-divider {
+  width: 1px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="darkcode"] .worksense-stat-divider {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 健康收益预测 */
+.worksense-benefit-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-5);
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-2xl);
+}
+
+[data-theme="darkcode"] .worksense-benefit-section {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.worksense-benefit-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.worksense-benefit-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-4);
+}
+
+.worksense-benefit-score-current {
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-secondary);
+}
+
+.worksense-benefit-score-arrow {
+  font-size: var(--font-size-xl);
+  color: var(--text-tertiary);
+}
+
+.worksense-benefit-score-target {
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.worksense-benefit-details {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--spacing-4);
+}
+
+.worksense-benefit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.worksense-benefit-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.worksense-benefit-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-500);
+}
+
+.worksense-benefit-improvements {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.worksense-benefit-improvement {
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+/* AI洞察 */
+.worksense-insight-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-5);
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-2xl);
+}
+
+[data-theme="darkcode"] .worksense-insight-section {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.worksense-insight-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.worksense-insight-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.worksense-insight-content p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* 隐私提示 */
+.worksense-privacy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: var(--spacing-4);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+[data-theme="darkcode"] .worksense-privacy {
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 状态切换动画 */
+.worksense-fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: all 250ms var(--ease-smooth);
+}
+
+.worksense-fade-in {
+  opacity: 0;
+  transform: scale(1.02);
+  animation: worksense-fade-in 400ms var(--ease-smooth) forwards;
+}
+
+@keyframes worksense-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .worksense-card {
+    padding: var(--spacing-6);
+  }
+  
+  .worksense-duration-number {
+    font-size: 3rem;
+  }
+  
+  .worksense-state-circle {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .worksense-state-label {
+    font-size: var(--font-size-xl);
+  }
+  
+  .worksense-stats-grid {
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+  
+  .worksense-stat-divider {
+    width: 100%;
+    height: 1px;
+  }
+  
+  .worksense-benefit-details {
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+  
+  .worksense-benefit-score {
+    flex-wrap: wrap;
+  }
+  
+  .worksense-benefit-score-current,
+  .worksense-benefit-score-target {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .worksense-card {
+    padding: var(--spacing-10);
+  }
+  
+  .worksense-stats-grid {
+    gap: var(--spacing-8);
+  }
+}

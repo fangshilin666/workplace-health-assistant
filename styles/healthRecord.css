@@ -1,0 +1,601 @@
+/**
+ * HealthRecord - AI健康记录页面样式
+ * 
+ * 采用 Apple Human Interface 风格设计：
+ * - 大量留白
+ * - 卡片式布局
+ * - 柔和渐变背景
+ * - 毛玻璃效果
+ * - 响应式布局
+ */
+
+#health-record-page {
+  display: none;
+}
+
+#health-record-page.active {
+  display: block;
+}
+
+.health-record-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* 页面头部 */
+.health-record-header {
+  text-align: center;
+  padding: var(--spacing-8) var(--spacing-6);
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-secondary-50) 100%);
+  border-radius: var(--radius-3xl);
+  margin-bottom: var(--spacing-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.health-record-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.health-record-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-4);
+}
+
+.health-record-score-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.health-record-score {
+  font-size: 5rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -4px;
+}
+
+.health-record-level {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-600);
+}
+
+.health-record-summary {
+  margin-top: var(--spacing-4);
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 卡片通用样式 */
+.health-record-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
+  box-shadow: var(--shadow-card);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.health-record-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.health-record-card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-4);
+}
+
+/* 时间轴样式 */
+.health-record-timeline {
+  position: relative;
+}
+
+.health-record-timeline::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-muted-100);
+}
+
+.health-record-timeline-item {
+  display: flex;
+  gap: var(--spacing-4);
+  padding: var(--spacing-3) 0;
+  position: relative;
+  animation: fade-slide-in 0.4s ease-out backwards;
+}
+
+.health-record-timeline-item:nth-child(1) { animation-delay: 0.1s; }
+.health-record-timeline-item:nth-child(2) { animation-delay: 0.2s; }
+.health-record-timeline-item:nth-child(3) { animation-delay: 0.3s; }
+.health-record-timeline-item:nth-child(4) { animation-delay: 0.4s; }
+.health-record-timeline-item:nth-child(5) { animation-delay: 0.5s; }
+.health-record-timeline-item:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.health-record-timeline-dot {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 3px solid var(--color-muted-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  color: var(--text-secondary);
+}
+
+.health-record-timeline-dot.completed {
+  background: var(--color-primary-100);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-600);
+}
+
+.health-record-timeline-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.health-record-timeline-time {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.health-record-timeline-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* AI分析 */
+.health-record-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.health-record-analysis-item {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding-left: var(--spacing-3);
+  border-left: 3px solid var(--color-primary-400);
+}
+
+/* 今日亮点 */
+.health-record-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.health-record-highlight-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+}
+
+.health-record-highlight-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.health-record-highlight-text {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+/* 需要改善 */
+.health-record-improvements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.health-record-improvement-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--spacing-3);
+  background: var(--color-warning-50);
+  border-radius: var(--radius-lg);
+}
+
+.health-record-improvement-text {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.health-record-improvement-suggestion {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* 明日目标 */
+.health-record-goals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.health-record-goal-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+}
+
+.health-record-goal-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-muted-200);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.health-record-goal-checkbox.completed {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+}
+
+.health-record-goal-text {
+  flex: 1;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+.health-record-goal-difficulty {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.health-record-goal-difficulty.easy {
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+}
+
+.health-record-goal-difficulty.normal {
+  background: var(--color-warning-100);
+  color: var(--color-warning-700);
+}
+
+.health-record-goal-difficulty.challenge {
+  background: var(--color-danger-100);
+  color: var(--color-danger-700);
+}
+
+.health-record-goals-footer {
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-muted-100);
+  text-align: center;
+}
+
+.health-record-goals-difficulty-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.health-record-goals-difficulty-value {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+/* 成就徽章 */
+.health-record-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+}
+
+.health-record-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  min-width: 80px;
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.health-record-badge:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-soft);
+}
+
+.health-record-badge-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary-100) 0%, var(--color-secondary-100) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.health-record-badge-name {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.health-record-badge.locked {
+  opacity: 0.4;
+}
+
+.health-record-badge.locked .health-record-badge-icon {
+  background: var(--color-muted-100);
+}
+
+/* 分享卡片 */
+.health-record-share-card {
+  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+  color: white;
+}
+
+.health-record-share-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+}
+
+.health-record-share-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.health-record-share-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.health-record-share-brand-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.health-record-share-brand-tagline {
+  font-size: var(--font-size-xs);
+  opacity: 0.8;
+}
+
+.health-record-share-score {
+  text-align: center;
+  margin: var(--spacing-6) 0;
+}
+
+.health-record-share-score-value {
+  font-size: 4rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.health-record-share-score-label {
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.health-record-share-summary {
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.health-record-share-badges {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-6);
+}
+
+.health-record-share-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.health-record-share-date {
+  text-align: center;
+  font-size: var(--font-size-xs);
+  opacity: 0.6;
+}
+
+.health-record-share-btn {
+  width: 100%;
+  padding: var(--spacing-4);
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: var(--radius-xl);
+  color: white;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-smooth);
+  margin-top: var(--spacing-4);
+}
+
+.health-record-share-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.health-record-share-btn:active {
+  transform: scale(0.98);
+}
+
+/* 数字滚动动画 */
+.health-record-score {
+  display: inline-block;
+}
+
+/* 徽章获得动画 */
+@keyframes badge-unlock {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.health-record-badge.unlocked-animation {
+  animation: badge-unlock 0.5s var(--ease-bounce) forwards;
+}
+
+/* 页面进入动画 */
+.health-record-container > * {
+  animation: page-fade-in 0.5s ease-out backwards;
+}
+
+.health-record-container > *:nth-child(1) { animation-delay: 0.1s; }
+.health-record-container > *:nth-child(2) { animation-delay: 0.2s; }
+.health-record-container > *:nth-child(3) { animation-delay: 0.3s; }
+.health-record-container > *:nth-child(4) { animation-delay: 0.4s; }
+.health-record-container > *:nth-child(5) { animation-delay: 0.5s; }
+.health-record-container > *:nth-child(6) { animation-delay: 0.6s; }
+.health-record-container > *:nth-child(7) { animation-delay: 0.7s; }
+.health-record-container > *:nth-child(8) { animation-delay: 0.8s; }
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 深色主题适配 */
+[data-theme="darkcode"] .health-record-header {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+}
+
+[data-theme="darkcode"] .health-record-timeline::before {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="darkcode"] .health-record-timeline-dot {
+  background: var(--bg-card);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="darkcode"] .health-record-improvement-item {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+[data-theme="darkcode"] .health-record-goals-footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .health-record-container {
+    padding: 0 var(--spacing-4);
+  }
+  
+  .health-record-header {
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+  
+  .health-record-score {
+    font-size: 4rem;
+  }
+  
+  .health-record-card {
+    padding: var(--spacing-5);
+  }
+  
+  .health-record-badges {
+    gap: var(--spacing-2);
+  }
+  
+  .health-record-badge {
+    min-width: 70px;
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+  
+  .health-record-share-score-value {
+    font-size: 3rem;
+  }
+}

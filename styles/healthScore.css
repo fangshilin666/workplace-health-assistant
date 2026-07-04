@@ -1,0 +1,351 @@
+/* ==================== 健康评分卡片样式 ==================== */
+
+.health-score-card {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.health-score-card:hover {
+    box-shadow: var(--shadow-card-hover);
+}
+
+.health-score-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-6);
+}
+
+.health-score-title {
+    display: flex;
+    flex-direction: column;
+}
+
+.health-score-label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-muted-500);
+    margin-bottom: var(--spacing-1);
+}
+
+.health-score-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-muted-400);
+}
+
+.health-score-level {
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.health-score-level:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+}
+
+.health-score-ring-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto var(--spacing-6);
+}
+
+.health-score-ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.health-score-ring-bg {
+    fill: none;
+    stroke: var(--color-muted-100);
+    stroke-width: 12;
+}
+
+.health-score-ring-progress {
+    fill: none;
+    stroke-width: 12;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s var(--ease-smooth);
+}
+
+.health-score-ring-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.health-score-main {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+}
+
+.health-score-value {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    transition: color var(--duration-normal) var(--ease-smooth);
+}
+
+.health-score-unit {
+    font-size: var(--font-size-sm);
+    color: var(--color-muted-400);
+    margin-top: var(--spacing-1);
+}
+
+.health-score-trend {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.health-score-trend.up {
+    color: var(--color-success-500);
+}
+
+.health-score-trend.down {
+    color: var(--color-error-500);
+}
+
+.health-score-trend.same {
+    color: var(--color-muted-500);
+}
+
+.health-score-breakdown {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
+}
+
+.health-score-item {
+    background-color: var(--color-muted-50);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.health-score-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.health-score-item:focus-within {
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.health-score-item-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+}
+
+.health-score-item-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.health-score-item-icon.sit {
+    background-color: var(--color-blue-50);
+}
+
+.health-score-item-icon.stretch {
+    background-color: var(--color-orange-50);
+}
+
+.health-score-item-icon.pose {
+    background-color: var(--color-secondary-50);
+}
+
+.health-score-item-icon.eye {
+    background-color: var(--color-green-50);
+}
+
+.health-score-item-name {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--color-muted-600);
+}
+
+.health-score-item-score {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-1);
+}
+
+.health-score-item-value {
+    font-size: 28px;
+    font-weight: 700;
+    transition: color var(--duration-normal) var(--ease-smooth);
+}
+
+.health-score-item-percent {
+    font-size: var(--font-size-xs);
+    color: var(--color-muted-400);
+}
+
+.health-score-item-bar {
+    height: 4px;
+    background-color: var(--color-muted-200);
+    border-radius: 2px;
+    margin-top: var(--spacing-2);
+    overflow: hidden;
+}
+
+.health-score-item-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s var(--ease-smooth);
+}
+
+.health-score-advice {
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-soft-green) 100%);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.health-score-advice-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-primary-700);
+    margin-bottom: var(--spacing-3);
+}
+
+.health-score-advice-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.health-score-advice-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-primary-800);
+    line-height: 1.5;
+}
+
+.health-score-advice-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-primary-500);
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+
+.health-score-advice-text {
+    flex: 1;
+}
+
+.health-score-update {
+    text-align: center;
+    margin-top: var(--spacing-4);
+}
+
+.health-score-update-text {
+    font-size: var(--font-size-xs);
+    color: var(--color-muted-400);
+}
+
+.health-score-animate-value {
+    animation: scoreCount 1.5s var(--ease-smooth) forwards;
+}
+
+@keyframes scoreCount {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.health-score-animate-ring {
+    animation: ringDraw 1.5s var(--ease-smooth) forwards;
+}
+
+@keyframes ringDraw {
+    from {
+        stroke-dasharray: 0 264;
+    }
+    to {
+        stroke-dasharray: 264 264;
+    }
+}
+
+@media (max-width: 640px) {
+    .health-score-card {
+        padding: var(--spacing-4);
+    }
+    
+    .health-score-header {
+        margin-bottom: var(--spacing-4);
+    }
+    
+    .health-score-ring-container {
+        width: 120px;
+        height: 120px;
+        margin-bottom: var(--spacing-4);
+    }
+    
+    .health-score-value {
+        font-size: 40px;
+    }
+    
+    .health-score-breakdown {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-3);
+        margin-bottom: var(--spacing-4);
+    }
+    
+    .health-score-item {
+        padding: var(--spacing-3);
+    }
+    
+    .health-score-item-value {
+        font-size: 24px;
+    }
+}
+
+[data-theme="darkcode"] .health-score-item {
+    background-color: var(--color-muted-100);
+}
+
+[data-theme="darkcode"] .health-score-advice {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+}
+
+[data-theme="darkcode"] .health-score-advice-text {
+    color: var(--color-primary-300);
+}
+
+[data-theme="darkcode"] .health-score-advice-title {
+    color: var(--color-primary-400);
+}

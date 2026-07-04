@@ -1,0 +1,382 @@
+/* ==================== WorkEase 统一动画系统 ==================== */
+
+/* ========== 缓动函数 ========== */
+:root {
+  --ease-linear: linear;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-entering: 600ms;
+}
+
+/* ========== 页面过渡动画 ========== */
+
+/* 淡入 */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in var(--duration-normal) var(--ease-smooth) forwards;
+}
+.animate-fade-in-fast {
+  animation: fade-in var(--duration-fast) var(--ease-smooth) forwards;
+}
+.animate-fade-in-slow {
+  animation: fade-in var(--duration-slow) var(--ease-smooth) forwards;
+}
+
+/* 从上滑入 */
+@keyframes slide-down {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+.animate-slide-down {
+  animation: slide-down var(--duration-normal) var(--ease-smooth) forwards;
+}
+
+/* 从下滑入 */
+@keyframes slide-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+.animate-slide-up {
+  animation: slide-up var(--duration-normal) var(--ease-smooth) forwards;
+}
+
+/* 从左滑入 */
+@keyframes slide-left {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+.animate-slide-left {
+  animation: slide-left var(--duration-normal) var(--ease-smooth) forwards;
+}
+
+/* 从右滑入 */
+@keyframes slide-right {
+  from { 
+    opacity: 0; 
+    transform: translateX(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+.animate-slide-right {
+  animation: slide-right var(--duration-normal) var(--ease-smooth) forwards;
+}
+
+/* 缩放淡入 */
+@keyframes scale-in {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+.animate-scale-in {
+  animation: scale-in var(--duration-normal) var(--ease-smooth) forwards;
+}
+.animate-scale-in-bounce {
+  animation: scale-in var(--duration-normal) var(--ease-bounce) forwards;
+}
+
+/* 弹跳进入 */
+@keyframes bounce-in {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.3); 
+  }
+  50% { 
+    transform: scale(1.05); 
+  }
+  70% { 
+    transform: scale(0.9); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+.animate-bounce-in {
+  animation: bounce-in var(--duration-slow) var(--ease-smooth) forwards;
+}
+
+/* ========== 交互反馈动画 ========== */
+
+/* 按钮点击缩放 */
+@keyframes press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+.animate-press {
+  animation: press var(--duration-fast) var(--ease-smooth);
+}
+
+/* 脉冲 */
+@keyframes pulse-soft {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.02); 
+  }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 2s var(--ease-smooth) infinite;
+}
+
+/* 呼吸动画 */
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.animate-breathe {
+  animation: breathe 3s var(--ease-smooth) infinite;
+}
+
+/* 震动 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+.animate-shake {
+  animation: shake 0.5s var(--ease-smooth);
+}
+
+/* 摇摆 */
+@keyframes swing {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+.animate-swing {
+  animation: swing 1s var(--ease-smooth) infinite;
+}
+
+/* ========== 进度动画 ========== */
+
+/* 数字滚动 */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-count-up {
+  animation: count-up var(--duration-slow) var(--ease-smooth) forwards;
+}
+
+/* 进度条填充 */
+@keyframes progress-fill {
+  from { width: 0; }
+}
+.animate-progress-fill {
+  animation: progress-fill var(--duration-slow) var(--ease-smooth) forwards;
+}
+
+/* 圆形进度环 */
+@keyframes ring-fill {
+  from { stroke-dashoffset: 264; }
+}
+.animate-ring-fill {
+  animation: ring-fill var(--duration-entering) var(--ease-smooth) forwards;
+}
+
+/* ========== Toast动画 ========== */
+
+@keyframes toast-enter {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+@keyframes toast-exit {
+  from { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+  to { 
+    opacity: 0; 
+    transform: translateY(-10px) scale(0.98); 
+  }
+}
+.animate-toast-enter {
+  animation: toast-enter var(--duration-fast) var(--ease-smooth) forwards;
+}
+.animate-toast-exit {
+  animation: toast-exit var(--duration-fast) var(--ease-smooth) forwards;
+}
+
+/* ========== Modal动画 ========== */
+
+@keyframes modal-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modal-content-in {
+  from { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+@keyframes modal-content-out {
+  from { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+  to { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
+}
+.animate-modal-overlay-in {
+  animation: modal-overlay-in var(--duration-normal) var(--ease-smooth) forwards;
+}
+.animate-modal-content-in {
+  animation: modal-content-in var(--duration-normal) var(--ease-smooth) forwards;
+}
+.animate-modal-content-out {
+  animation: modal-content-out var(--duration-normal) var(--ease-smooth) forwards;
+}
+
+/* ========== 骨架屏动画 ========== */
+
+@keyframes skeleton-wave {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-skeleton-wave {
+  animation: skeleton-wave 1.5s var(--ease-smooth) infinite;
+  background: linear-gradient(
+    90deg,
+    var(--color-muted-100) 25%,
+    var(--color-muted-50) 50%,
+    var(--color-muted-100) 75%
+  );
+  background-size: 200% 100%;
+}
+
+/* ========== 浮动动画 ========== */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 3s var(--ease-smooth) infinite;
+}
+
+/* ========== 旋转动画 ========== */
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+@keyframes spin-medium {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-medium {
+  animation: spin-medium 1.5s linear infinite;
+}
+
+@keyframes spin-fast {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-fast {
+  animation: spin-fast 0.5s linear infinite;
+}
+
+/* ========== 渐显动画 ========== */
+
+@keyframes fade-in-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up var(--duration-normal) var(--ease-smooth) forwards;
+}
+
+/* ========== 卡片翻转动画 ========== */
+
+@keyframes flip {
+  0% { transform: perspective(400px) rotateY(90deg); }
+  40% { transform: perspective(400px) rotateY(-10deg); }
+  70% { transform: perspective(400px) rotateY(10deg); }
+  100% { transform: perspective(400px) rotateY(0deg); }
+}
+.animate-flip {
+  animation: flip var(--duration-slow) var(--ease-smooth) forwards;
+}
+
+/* ========== 延迟动画工具类 ========== */
+
+.delay-50 { animation-delay: 50ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-250 { animation-delay: 250ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-350 { animation-delay: 350ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-450 { animation-delay: 450ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-800 { animation-delay: 800ms; }
+.delay-900 { animation-delay: 900ms; }
+.delay-1000 { animation-delay: 1000ms; }
+
+/* ========== 动画填充模式 ========== */
+
+.animation-fill-forwards { animation-fill-mode: forwards; }
+.animation-fill-backwards { animation-fill-mode: backwards; }
+.animation-fill-both { animation-fill-mode: both; }
